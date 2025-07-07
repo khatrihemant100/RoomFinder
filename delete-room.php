@@ -23,7 +23,7 @@ if ($stmt->fetch()) {
     $del->bind_param("ii", $id, $user_id);
     $del->execute();
     // Optionally delete image file
-    if ($image && file_exists($image)) unlink($image);
+    if ($image && file_exists(__DIR__ . '/' . $image)) unlink(__DIR__ . '/' . $image);
     header("Location: find-rooms.php?msg=deleted");
     exit();
 } else {

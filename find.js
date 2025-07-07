@@ -132,7 +132,7 @@ function displayRooms(roomsArray) {
     resultsContainer.appendChild(card);
   });
 
-  // Event handlers
+  // Move these inside displayRooms so they always attach after rendering
   document.querySelectorAll('.edit-btn').forEach(button => {
     button.addEventListener('click', function() {
       const roomId = this.getAttribute('data-id');

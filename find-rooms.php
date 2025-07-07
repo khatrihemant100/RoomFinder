@@ -344,6 +344,22 @@ while($row = $res->fetch_assoc()) $rooms[] = $row;
           }
         });
       });
+
+      // ==== यी दुई handler थप्नुहोस् ====
+      document.querySelectorAll('.edit-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const roomId = this.getAttribute('data-id');
+          window.location.href = 'edit-room.php?id=' + roomId;
+        });
+      });
+      document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+          const roomId = this.getAttribute('data-id');
+          if (confirm('Are you sure you want to delete this room?')) {
+            window.location.href = 'delete-room.php?id=' + roomId;
+          }
+        });
+      });
     }
 
     // Handle search form submission
@@ -388,3 +404,8 @@ while($row = $res->fetch_assoc()) $rooms[] = $row;
  
 </body>
 </html>
+<?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
+  <div style="background:#e0ffe0;color:#207520;padding:10px 20px;margin:20px 0;border-radius:8px;text-align:center;">
+    Room successfully deleted!
+  </div>
+<?php endif; ?>

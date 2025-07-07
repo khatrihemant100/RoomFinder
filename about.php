@@ -70,7 +70,7 @@
             <p class="text-lg text-gray-700 max-w-2xl text-center mb-8">
                 RoomFinder is your trusted platform to find the perfect room or tenant. Our mission is to make renting and letting rooms simple, safe, and efficient for everyone. Whether you are a student, a working professional, or a property owner, RoomFinder brings you the best tools and features to connect and succeed.
             </p>
-            <img src="https://readdy.ai/api/search-image?query=Modern%20apartment%20building%20with%20happy%20people%20moving%20in%2C%20bright%20and%20welcoming%20atmosphere.&width=800&height=350&seq=1&orientation=landscape" alt="About RoomFinder" class="rounded-lg shadow-lg mb-10 w-full max-w-3xl object-cover">
+            <img src="uploads/hemant.png" alt="About RoomFinder" class="rounded-lg shadow-lg mb-10 w-full max-w-3xl object-cover">
         </div>
     </section>
 
