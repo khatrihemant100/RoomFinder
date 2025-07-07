@@ -12,12 +12,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- नेपाली नोट: Remixicon आइकनका लागि -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
-    <!-- नेपाली नोट: TailwindCSS जोडिएको छ -->
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
-        /* नेपाली नोट: Tailwind को कस्टम कन्फिग */
         tailwind.config = {
             theme: {
                 extend: {
@@ -30,12 +27,10 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="styles.css">
 
-
-
-<!-- AI Chat Button & Chat Window -->
 <style>
-  /* AI Chat Button */
+  /* AI Chat Button & Chat Window */
   #ai-chat-btn {
     position: fixed;
     bottom: 32px;
@@ -54,16 +49,12 @@
     cursor: pointer;
     transition: background 0.2s;
     overflow: visible;
-  
-
-
   }
   #ai-chat-btn .ai-logo,
   #ai-chat-btn .ai-bot {
     position: relative;
     z-index: 1;
   }
-  /* Chat Window */
   #ai-chat-window {
     position: fixed;
     bottom: 110px;
@@ -174,6 +165,8 @@
     background: #357ABD;
   }
 </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
 
 <!-- AI Chat Button -->
 <button id="ai-chat-btn" title="Chat with RoomFinder AI">
@@ -206,48 +199,6 @@
   </form>
 </div>
 
-<script>
-  // Show/hide chat window
-  const chatBtn = document.getElementById('ai-chat-btn');
-  const chatWin = document.getElementById('ai-chat-window');
-  const chatClose = document.getElementById('ai-chat-close');
-  chatBtn.onclick = () => chatWin.style.display = 'flex';
-  chatClose.onclick = () => chatWin.style.display = 'none';
-
-  // Chat logic (demo: echo, you can connect to real AI backend)
-  const chatForm = document.getElementById('ai-chat-input-area');
-  const chatInput = document.getElementById('ai-chat-input');
-  const chatMessages = document.getElementById('ai-chat-messages');
-
-  chatForm.onsubmit = function(e) {
-    e.preventDefault();
-    const msg = chatInput.value.trim();
-    if (!msg) return;
-    // Show user message
-    const userDiv = document.createElement('div');
-    userDiv.className = 'user-msg';
-    userDiv.innerHTML = `<div class="bubble">${msg}</div>`;
-    chatMessages.appendChild(userDiv);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-    chatInput.value = '';
-    // Simulate AI response (replace with real AI call)
-    setTimeout(() => {
-      const aiDiv = document.createElement('div');
-      aiDiv.className = 'ai-msg';
-      aiDiv.innerHTML = `<div class="bubble">You asked: "${msg}"<br><span style="color:#4A90E2;">(This is a demo. Connect to OpenAI or your backend for real answers!)</span></div>`;
-      chatMessages.appendChild(aiDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }, 800);
-  };
-</script>
-
-
-
-
-    <!-- नेपाली नोट: बाह्य CSS फाइल लिंक (styles.css) -->
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body class="bg-gray-50 min-h-screen">
     <!-- Header Start -->
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 py-3 flex items-center justify-between">
@@ -297,23 +248,26 @@
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-lg p-4">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex-grow">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none w-10 h-10">
-                                    <i class="ri-map-pin-line text-gray-400"></i>
-                                </div>
-                                <input type="text" class="w-full pl-10 pr-4 py-3 border-none rounded bg-gray-50 custom-input" placeholder="Enter location">
-                            </div>
+                  <form id="location-search-form" class="flex flex-col md:flex-row gap-4">
+                    <div class="flex-grow">
+                      <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none w-10 h-10">
+                          <i class="ri-map-pin-line text-gray-400"></i>
                         </div>
-                        <button class="px-6 py-3 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Search</button>
+                        <input type="text" name="location" id="location-input" class="w-full pl-10 pr-4 py-3 border-none rounded bg-gray-50 custom-input" placeholder="Enter location" required>
+                      </div>
                     </div>
-                    
-                    <div class="flex flex-wrap gap-2 mt-4">
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">Budget: Any</button>
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">Room Type: Any</button>
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">More Filters</button>
-                    </div>
+                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Search</button>
+                  </form>
+                </div>
+                
+                <!-- Modal/Dialog for search results -->
+                <div id="search-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">
+                  <div style="background:#fff;max-width:600px;width:95vw;padding:24px 16px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
+                    <button id="close-modal" style="position:absolute;top:12px;right:16px;font-size:1.5rem;background:none;border:none;cursor:pointer;">&times;</button>
+                    <h3 style="font-size:1.3rem;font-weight:bold;margin-bottom:12px;">Search Results</h3>
+                    <div id="modal-results"></div>
+                  </div>
                 </div>
             </div>
         </div>
@@ -682,19 +636,20 @@
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-bold mb-4">Find Rooms Near You</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Use our interactive map to discover available properties in your desired location.</p>
+                <p class="text-gray-600 max-w-2xl mx-auto mb-4">Use our interactive map to discover available properties in your desired location.</p>
+                
+                <div class="flex justify-center gap-2">
+                    <button class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap" id="show-map-btn">Show Map</button>
+                    <button class="px-4 py-2 border border-primary text-primary rounded-button hover:bg-gray-50 transition-colors whitespace-nowrap" id="list-view-btn">List View</button>
+                </div>
             </div>
             
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="h-96 w-full" style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png'); background-size: cover; background-position: center;"></div>
+                <div class="h-96 w-full" id="map-placeholder" style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png'); background-size: cover; background-position: center;"></div>
                 
-                <div class="p-4 bg-white border-t">
-                    <div class="flex flex-wrap gap-2">
-                        <button class="px-3 py-1 bg-primary text-white rounded-full text-sm whitespace-nowrap">All Properties</button>
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">Studios</button>
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">1 Bedroom</button>
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">2+ Bedrooms</button>
-                        <button class="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-gray-200 transition-colors whitespace-nowrap">Shared Rooms</button>
+                <div class="p-4 bg-white border-t" id="room-list" style="display:none;">
+                    <div class="flex flex-col gap-4">
+                        <!-- Room items will be populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -871,5 +826,113 @@
 
     <!-- नेपाली नोट: बाह्य JavaScript फाइल लिंक (main.js) -->
     <script src="main.js"></script>
+
+<script>
+// Location search modal (as before)
+document.getElementById('location-search-form').onsubmit = async function(e) {
+  e.preventDefault();
+  const location = document.getElementById('location-input').value.trim();
+  if (!location) return;
+  const modal = document.getElementById('search-modal');
+  const resultsDiv = document.getElementById('modal-results');
+  resultsDiv.innerHTML = '<div style="text-align:center;padding:24px;">Searching...</div>';
+  modal.style.display = 'flex';
+
+  // Fetch rooms from API
+  try {
+    const res = await fetch('find-rooms.php?api=1&location=' + encodeURIComponent(location));
+    const rooms = await res.json();
+    if (rooms.length === 0) {
+      resultsDiv.innerHTML = '<div style="text-align:center;padding:24px;">No rooms found for <b>' + location + '</b>.</div>';
+    } else {
+      resultsDiv.innerHTML = rooms.map(room => `
+        <div style="border-bottom:1px solid #eee;padding:12px 0;display:flex;gap:12px;align-items:flex-start;">
+          <img src="${room.image ? room.image : 'no-image.png'}" alt="Room Image" style="width:90px;height:70px;object-fit:cover;border-radius:8px;">
+          <div style="flex:1;">
+            <div style="font-weight:bold;font-size:1.1rem;">${room.title || ''}</div>
+            <div style="color:#4A90E2;">${room.location || ''}</div>
+            <div>Type: ${room.type || ''}</div>
+            <div>Rent: ${room.price ? '¥' + room.price : ''}</div>
+            <div style="margin-top:4px;">
+              <a href="find-rooms.php?id=${room.id}" style="color:#4A90E2;text-decoration:underline;">View Details</a>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (err) {
+    resultsDiv.innerHTML = '<div style="color:red;">Error fetching rooms.</div>';
+  }
+};
+document.getElementById('close-modal').onclick = function() {
+  document.getElementById('search-modal').style.display = 'none';
+};
+document.getElementById('search-modal').onclick = function(e) {
+  if (e.target === this) this.style.display = 'none';
+};
+
+// RoomFinder AI Chat (Gemini API)
+const GEMINI_API_KEY = "AIzaSyBv617GgnG7FCYpni2T92CNEkBHmPB_xTo";
+async function askGeminiAI(userMessage) {
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
+  const body = {
+    contents: [
+      { parts: [{ text: userMessage }] }
+    ]
+  };
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
+}
+
+// Show/hide chat window
+const chatBtn = document.getElementById('ai-chat-btn');
+const chatWin = document.getElementById('ai-chat-window');
+const chatClose = document.getElementById('ai-chat-close');
+chatBtn.onclick = () => chatWin.style.display = 'flex';
+chatClose.onclick = () => chatWin.style.display = 'none';
+
+// Chat logic (Gemini live)
+const chatForm = document.getElementById('ai-chat-input-area');
+const chatInput = document.getElementById('ai-chat-input');
+const chatMessages = document.getElementById('ai-chat-messages');
+
+chatForm.onsubmit = async function(e) {
+  e.preventDefault();
+  const msg = chatInput.value.trim();
+  if (!msg) return;
+  // Show user message
+  const userDiv = document.createElement('div');
+  userDiv.className = 'user-msg';
+  userDiv.innerHTML = `<div class="bubble">${msg}</div>`;
+  chatMessages.appendChild(userDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatInput.value = '';
+  chatInput.disabled = true;
+
+  // Show loading
+  const aiDiv = document.createElement('div');
+  aiDiv.className = 'ai-msg';
+  aiDiv.innerHTML = `<div class="bubble">Thinking...</div>`;
+  chatMessages.appendChild(aiDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+
+  // Get Gemini AI response
+  let aiReply;
+  try {
+    aiReply = await askGeminiAI(msg);
+  } catch (err) {
+    aiReply = "Sorry, AI service is not available right now.";
+  }
+  aiDiv.innerHTML = `<div class="bubble">${aiReply}</div>`;
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+  chatInput.disabled = false;
+  chatInput.focus();
+};
+</script>
 </body>
 </html>

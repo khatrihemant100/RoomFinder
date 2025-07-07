@@ -1,5 +1,23 @@
-<?php session_start(); ?>
 <?php
+session_start();
+if (isset($_GET['api']) && $_GET['api'] == '1') {
+    $conn = new mysqli("localhost", "root", "", "roomfinder");
+    $location = isset($_GET['location']) ? trim($_GET['location']) : '';
+    $rooms = [];
+    if ($location !== '') {
+        $stmt = $conn->prepare("SELECT * FROM rooms WHERE location LIKE ? ORDER BY created_at DESC");
+        $like = '%' . $location . '%';
+        $stmt->bind_param("s", $like);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        while($row = $res->fetch_assoc()) $rooms[] = $row;
+        $stmt->close();
+    }
+    header('Content-Type: application/json');
+    echo json_encode($rooms);
+    exit;
+}
+
 // Fetch all rooms from the database
 $conn = new mysqli("localhost", "root", "", "roomfinder");
 $rooms = [];
@@ -308,7 +326,8 @@ while($row = $res->fetch_assoc()) $rooms[] = $row;
         const card = document.createElement('div');
         card.className = 'card';
         card.innerHTML = `
-          <div class="image" style="background-image:  url('${room.image}')">
+          <div class="image">
+            <img src="${room.image}" alt="Room Image" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;">
             <div class="rent-badge">¥${room.price ? room.price.toLocaleString() : ''}</div>
           </div>
           <div class="card-content">
