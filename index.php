@@ -4,7 +4,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- नेपाली नोट: मेटाडाटा र आवश्यक लिंकहरू राखिएको भाग -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RoomFinder - Find Your Perfect Room</title>
