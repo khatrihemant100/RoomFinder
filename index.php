@@ -256,7 +256,7 @@
                 <a href="index.php" class="text-gray-700 hover:text-primary transition-colors">Home</a>
                 <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
                 <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
-                <a href="about.html" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
+                <a href="about.php" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
                 <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
             </div>
             <div class="flex items-center space-x-4">
