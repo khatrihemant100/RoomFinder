@@ -1,0 +1,199 @@
+/* नेपाली नोट: सबै Remixicon आइकनका लागि डिफल्ट content सेट */
+:where([class^="ri-"])::before { content: "\f3c2"; }
+
+/* नेपाली नोट: मुख्य body को फन्ट र रंग सेट */
+body {
+    font-family: 'Inter', sans-serif;
+    color: #2D3436;
+}
+
+/* नेपाली नोट: कस्टम box-shadow को लागि */
+.custom-shadow {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* नेपाली नोट: इनपुट बक्सको लागि कस्टम स्टाइल */
+.custom-input {
+    border: 1px solid #E2E8F0;
+    outline: none;
+    transition: all 0.3s;
+}
+
+/* नेपाली नोट: इनपुट बक्स focus हुँदा outline र border रंग परिवर्तन */
+.custom-input:focus {
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+/* नेपाली नोट: range slider को thumb को लागि कस्टम स्टाइल */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #4A90E2;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* नेपाली नोट: डिफल्ट checkbox लुकाउने */
+input[type="checkbox"] {
+    display: none;
+}
+
+/* नेपाली नोट: कस्टम checkbox को लागि स्टाइल */
+.custom-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #CBD5E0;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* नेपाली नोट: checkbox checked हुँदा रंग परिवर्तन */
+input[type="checkbox"]:checked + .custom-checkbox {
+    background-color: #4A90E2;
+    border-color: #4A90E2;
+}
+
+/* नेपाली नोट: checkbox checked हुँदा भित्रको आइकन देखाउने */
+input[type="checkbox"]:checked + .custom-checkbox i {
+    display: block;
+    color: white;
+}
+
+/* नेपाली नोट: कस्टम switch को लागि स्टाइल */
+.custom-switch {
+    position: relative;
+    width: 48px;
+    height: 24px;
+    border-radius: 12px;
+    background-color: #CBD5E0;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+/* नेपाली नोट: switch को भित्रको गोलो भाग */
+.custom-switch::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: white;
+    transition: transform 0.3s;
+}
+
+/* नेपाली नोट: switch checked हुँदा रंग र स्थिति परिवर्तन */
+input[type="checkbox"]:checked + .custom-switch {
+    background-color: #4A90E2;
+}
+input[type="checkbox"]:checked + .custom-switch::after {
+    transform: translateX(24px);
+}
+
+/* नेपाली नोट: हिरो सेसनको लागि ब्याकग्राउन्ड इमेज र ग्रेडियन्ट */
+.hero-section {
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.7) 60%, rgba(255, 255, 255, 0) 100%), url('https://readdy.ai/api/search-image?query=A%20modern%2C%20bright%2C%20and%20spacious%20apartment%20living%20room%20with%20large%20windows%2C%20natural%20light%2C%20stylish%20furniture%2C%20and%20decorative%20elements.%20The%20room%20features%20a%20comfortable%20sofa%2C%20coffee%20table%2C%20and%20indoor%20plants.%20The%20space%20is%20clean%2C%20organized%2C%20and%20has%20a%20contemporary%20design%20aesthetic%20with%20soft%20neutral%20colors.&width=1200&height=600&seq=1&orientation=landscape');
+    background-size: cover;
+    background-position: center;
+}
+
+/* नेपाली नोट: प्रोपर्टी कार्ड hover गर्दा ट्रान्सफर्म र box-shadow */
+.property-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.property-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* नेपाली नोट: ट्याब बटन active हुँदा रंग परिवर्तन */
+.tab-button.active {
+    background-color: #4A90E2;
+    color: white;
+}
+
+/* नेपाली नोट: मोबाइलमा हिरो सेसनको ब्याकग्राउन्ड परिवर्तन */
+@media (max-width: 768px) {
+    .hero-section {
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 50%, rgba(255, 255, 255, 0.7) 70%, rgba(255, 255, 255, 0) 100%), url('https://readdy.ai/api/search-image?query=A%20modern%2C%20bright%2C%20and%20spacious%20apartment%20living%20room%20with%20large%20windows%2C%20natural%20light%2C%20stylish%20furniture%2C%20and%20decorative%20elements.%20The%20room%20features%20a%20comfortable%20sofa%2C%20coffee%20table%2C%20and%20indoor%20plants.%20The%20space%20is%20clean%2C%20organized%2C%20and%20has%20a%20contemporary%20design%20aesthetic%20with%20soft%20neutral%20colors.&width=800&height=600&seq=1&orientation=landscape');
+    }
+}
+
+/* नेपाली नोट: Contact पेजको लागि unique section style */
+.contact-section {
+    max-width: 500px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(74, 144, 226, 0.08);
+    padding: 32px 24px;
+    border: 1px solid #e5e7eb;
+}
+
+.contact-section h1 {
+    color: #4A90E2;
+    font-size: 2rem;
+    margin-bottom: 8px;
+    text-align: center;
+    font-family: 'Pacifico', cursive;
+}
+
+.contact-section ul {
+    margin-bottom: 24px;
+    padding-left: 0;
+    list-style: none;
+}
+
+.contact-section ul li {
+    margin-bottom: 8px;
+    font-size: 1rem;
+    color: #374151;
+}
+
+.contact-section form label {
+    font-weight: 500;
+    color: #374151;
+}
+
+.contact-section form input,
+.contact-section form textarea {
+    width: 100%;
+    margin-top: 4px;
+    margin-bottom: 16px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #E2E8F0;
+    font-size: 1rem;
+    background: #f9fafb;
+    transition: border 0.2s;
+}
+
+.contact-section form input:focus,
+.contact-section form textarea:focus {
+    border-color: #4A90E2;
+    outline: none;
+    background: #fff;
+}
+
+.contact-section form button {
+    width: 100%;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+.contact-section a {
+    display: block;
+    text-align: center;
+    margin-top: 24px;
+    color: #4A90E2;
+    text-decoration: underline;
+}
