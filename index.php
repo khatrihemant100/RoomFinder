@@ -31,6 +31,220 @@
             }
         }
     </script>
+
+
+
+<!-- AI Chat Button & Chat Window -->
+<style>
+  /* AI Chat Button */
+  #ai-chat-btn {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 9999;
+    background: #4A90E2;
+    color: #fff;
+    border: 5px solid #4A90E2;
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+    overflow: visible;
+  
+
+
+  }
+  #ai-chat-btn .ai-logo,
+  #ai-chat-btn .ai-bot {
+    position: relative;
+    z-index: 1;
+  }
+  /* Chat Window */
+  #ai-chat-window {
+    position: fixed;
+    bottom: 110px;
+    right: 32px;
+    width: 350px;
+    max-width: 95vw;
+    height: 480px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px 0 rgba(74,144,226,0.18);
+    z-index: 9999;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1.5px solid #4A90E2;
+    animation: fadeIn 0.2s;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px);}
+    to { opacity: 1; transform: translateY(0);}
+  }
+  #ai-chat-header {
+    background: #4A90E2;
+    color: #fff;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  #ai-chat-header .ai-logo {
+    font-size: 1.5rem;
+    margin-right: 8px;
+  }
+  #ai-chat-header .ai-bot {
+    font-size: 1.3rem;
+    margin-left: 2px;
+  }
+  #ai-chat-header .close-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    margin-left: 8px;
+  }
+  #ai-chat-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    background: #f8fafc;
+    font-size: 1rem;
+  }
+  .ai-msg, .user-msg {
+    margin-bottom: 12px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .ai-msg .bubble {
+    background: #eaf4fb;
+    color: #222;
+    border-radius: 12px 12px 12px 4px;
+    padding: 10px 14px;
+    max-width: 80%;
+    font-size: 1rem;
+    margin-right: auto;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.06);
+  }
+  .user-msg {
+    justify-content: flex-end;
+  }
+  .user-msg .bubble {
+    background: #4A90E2;
+    color: #fff;
+    border-radius: 12px 12px 4px 12px;
+    padding: 10px 14px;
+    max-width: 80%;
+    font-size: 1rem;
+    margin-left: auto;
+    box-shadow: 0 2px 8px rgba(74,144,226,0.10);
+  }
+  #ai-chat-input-area {
+    display: flex;
+    border-top: 1px solid #e5e7eb;
+    background: #fff;
+    padding: 10px;
+  }
+  #ai-chat-input {
+    flex: 1;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    background: #f3f4f6;
+    margin-right: 8px;
+    outline: none;
+  }
+  #ai-chat-send {
+    background: #4A90E2;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0 18px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  #ai-chat-send:hover {
+    background: #357ABD;
+  }
+</style>
+
+<!-- AI Chat Button -->
+<button id="ai-chat-btn" title="Chat with RoomFinder AI">
+  <span class="neon-border"></span>
+  <span class="ai-logo"><i class="ri-home-4-line"></i></span>
+  <span class="ai-bot"><i class="ri-robot-2-line"></i></span>
+</button>
+
+<!-- AI Chat Window -->
+<div id="ai-chat-window">
+  <div id="ai-chat-header">
+    <span>
+      <span class="ai-logo"><i class="ri-home-4-line"></i></span>
+      <span style="font-weight:bold;">RoomFinder AI</span>
+      <span class="ai-bot"><i class="ri-robot-2-line"></i></span>
+    </span>
+    <button class="close-btn" id="ai-chat-close" title="Close">&times;</button>
+  </div>
+  <div id="ai-chat-messages">
+    <div class="ai-msg">
+      <div class="bubble">
+        👋 Hi! I am RoomFinder AI.<br>
+        Ask me anything about rooms, locations, prices, or how to use this site!
+      </div>
+    </div>
+  </div>
+  <form id="ai-chat-input-area" autocomplete="off">
+    <input type="text" id="ai-chat-input" placeholder="Type your message..." required />
+    <button type="submit" id="ai-chat-send"><i class="ri-send-plane-2-line"></i></button>
+  </form>
+</div>
+
+<script>
+  // Show/hide chat window
+  const chatBtn = document.getElementById('ai-chat-btn');
+  const chatWin = document.getElementById('ai-chat-window');
+  const chatClose = document.getElementById('ai-chat-close');
+  chatBtn.onclick = () => chatWin.style.display = 'flex';
+  chatClose.onclick = () => chatWin.style.display = 'none';
+
+  // Chat logic (demo: echo, you can connect to real AI backend)
+  const chatForm = document.getElementById('ai-chat-input-area');
+  const chatInput = document.getElementById('ai-chat-input');
+  const chatMessages = document.getElementById('ai-chat-messages');
+
+  chatForm.onsubmit = function(e) {
+    e.preventDefault();
+    const msg = chatInput.value.trim();
+    if (!msg) return;
+    // Show user message
+    const userDiv = document.createElement('div');
+    userDiv.className = 'user-msg';
+    userDiv.innerHTML = `<div class="bubble">${msg}</div>`;
+    chatMessages.appendChild(userDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    chatInput.value = '';
+    // Simulate AI response (replace with real AI call)
+    setTimeout(() => {
+      const aiDiv = document.createElement('div');
+      aiDiv.className = 'ai-msg';
+      aiDiv.innerHTML = `<div class="bubble">You asked: "${msg}"<br><span style="color:#4A90E2;">(This is a demo. Connect to OpenAI or your backend for real answers!)</span></div>`;
+      chatMessages.appendChild(aiDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, 800);
+  };
+</script>
+
+
+
+
     <!-- नेपाली नोट: बाह्य CSS फाइल लिंक (styles.css) -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -41,7 +255,7 @@
             <a href="index.php" class="text-2xl font-['Pacifico'] text-primary">RoomFinder</a>
             <div class="hidden md:flex items-center space-x-6">
                 <a href="index.php" class="text-gray-700 hover:text-primary transition-colors">Home</a>
-                <a href="find-rooms.html" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
+                <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
                 <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
                 <a href="about.html" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
                 <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
