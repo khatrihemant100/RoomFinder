@@ -824,7 +824,7 @@
         </div>
     </footer>
 
-    <!-- नेपाली नोट: बाह्य JavaScript फाइल लिंक (main.js) -->
+<!-- नेपाली नोट: बाह्य JavaScript फाइल लिंक (main.js) -->
     <script src="main.js"></script>
 
 <script>
@@ -872,21 +872,34 @@ document.getElementById('search-modal').onclick = function(e) {
 };
 
 // RoomFinder AI Chat (Gemini API)
-const GEMINI_API_KEY = "AIzaSyBv617GgnG7FCYpni2T92CNEkBHmPB_xTo";
+const GEMINI_API_KEY = "AIzaSyAYoOAIrd7-WYQZzdYbsAjAatGEkKyB6oA";
 async function askGeminiAI(userMessage) {
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
+  if (!userMessage) return "Please enter a message.";
+  // Use v1 endpoint, not v1beta
+  const url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
   const body = {
     contents: [
-      { parts: [{ text: userMessage }] }
+      {
+        role: "user",
+        parts: [{ text: userMessage }]
+      }
     ]
   };
+  console.log("Sending to Gemini:", JSON.stringify(body));
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body)
   });
   const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't understand.";
+  console.log("Gemini response:", data);
+  if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
+    return data.candidates[0].content.parts[0].text;
+  } else if (data.error && data.error.message) {
+    return "AI Error: " + data.error.message;
+  } else {
+    return "Sorry, I couldn't understand.";
+  }
 }
 
 // Show/hide chat window
