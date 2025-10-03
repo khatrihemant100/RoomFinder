@@ -165,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="contact-info">
             <p><strong>Email:</strong> support@roomfinder.com</p>
             <p><strong>Phone:</strong> +977-1234567890</p>
-            <p><strong>Address:</strong> Kathmandu, Nepal</p>
+            <p><strong>Address:</strong> Yokohama, Japan</p>
         </div>
     </div>
 </body>

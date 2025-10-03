@@ -28,6 +28,7 @@
         }
     </script>
     <link rel="stylesheet" href="styles.css">
+    
 
 <style>
   /* AI Chat Button & Chat Window */
@@ -403,143 +404,7 @@
         </div>
     </section>
 
-    <!-- नेपाली नोट: Featured Properties सेसन (प्रमुख कोठाहरू) -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center mb-8">
-                <h2 class="text-3xl font-bold">Featured Properties</h2>
-                <a href="#" class="text-primary hover:underline">View All</a>
-            </div>
-            
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Property Card 1 -->
-                <div class="property-card bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="relative">
-                        <img src="https://readdy.ai/api/search-image?query=A%20modern%20studio%20apartment%20with%20clean%20design%2C%20featuring%20a%20comfortable%20bed%2C%20small%20kitchen%20area%2C%20and%20living%20space.%20The%20room%20has%20good%20natural%20light%2C%20minimal%20but%20stylish%20furniture%2C%20and%20appears%20well-maintained%20and%20inviting.%20The%20space%20is%20efficiently%20organized%20to%20maximize%20the%20available%20area.&width=400&height=250&seq=4&orientation=landscape" alt="Studio Apartment" class="w-full h-48 object-cover object-top">
-                        <div class="absolute top-3 left-3">
-                            <span class="bg-primary text-white text-xs px-2 py-1 rounded">Featured</span>
-                        </div>
-                        <div class="absolute top-3 right-3">
-                            <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm">
-                                <i class="ri-heart-line text-gray-600"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-lg font-semibold">Modern Studio Apartment</h3>
-                            <span class="text-primary font-bold">$750/mo</span>
-                        </div>
-                        <div class="flex items-center text-gray-500 text-sm mb-3">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-map-pin-line"></i>
-                            </div>
-                            <span class="ml-1">Downtown, Seattle</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Studio</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Wi-Fi</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">AC</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Furnished</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20middle-aged%20man%20with%20a%20friendly%20smile%2C%20wearing%20business%20casual%20attire.%20The%20image%20has%20a%20clean%2C%20neutral%20background%20and%20good%20lighting%20to%20highlight%20facial%20features%20clearly.%20The%20person%20appears%20approachable%20and%20trustworthy.&width=100&height=100&seq=5&orientation=squarish" alt="Owner" class="w-8 h-8 rounded-full object-cover">
-                                <div class="ml-2 flex items-center">
-                                    <span class="text-sm">Michael R.</span>
-                                    <div class="w-4 h-4 flex items-center justify-center text-primary ml-1">
-                                        <i class="ri-verified-badge-fill"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="#" class="text-primary text-sm hover:underline">Details</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Property Card 2 -->
-                <div class="property-card bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="relative">
-                        <img src="https://readdy.ai/api/search-image?query=A%20spacious%20one-bedroom%20apartment%20with%20separate%20living%20room%20and%20bedroom%20areas.%20The%20apartment%20features%20modern%20furniture%2C%20good%20lighting%2C%20and%20a%20clean%20aesthetic.%20The%20space%20includes%20a%20visible%20kitchen%20area%2C%20comfortable%20seating%2C%20and%20appears%20well-maintained%20and%20inviting%20for%20potential%20renters.&width=400&height=250&seq=6&orientation=landscape" alt="1 Bedroom Apartment" class="w-full h-48 object-cover object-top">
-                        <div class="absolute top-3 right-3">
-                            <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm">
-                                <i class="ri-heart-line text-gray-600"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-lg font-semibold">Spacious 1BHK Apartment</h3>
-                            <span class="text-primary font-bold">$950/mo</span>
-                        </div>
-                        <div class="flex items-center text-gray-500 text-sm mb-3">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-map-pin-line"></i>
-                            </div>
-                            <span class="ml-1">Capitol Hill, Seattle</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">1 Bedroom</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Wi-Fi</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Washing Machine</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20woman%20with%20a%20confident%20smile%2C%20wearing%20business%20casual%20attire.%20The%20image%20has%20a%20clean%2C%20neutral%20background%20and%20good%20lighting%20to%20highlight%20facial%20features%20clearly.%20The%20person%20appears%20approachable%20and%20trustworthy.&width=100&height=100&seq=7&orientation=squarish" alt="Owner" class="w-8 h-8 rounded-full object-cover">
-                                <div class="ml-2 flex items-center">
-                                    <span class="text-sm">Sarah J.</span>
-                                    <div class="w-4 h-4 flex items-center justify-center text-primary ml-1">
-                                        <i class="ri-verified-badge-fill"></i>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="#" class="text-primary text-sm hover:underline">Details</a>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Property Card 3 -->
-                <div class="property-card bg-white rounded-lg shadow-sm overflow-hidden">
-                    <div class="relative">
-                        <img src="https://readdy.ai/api/search-image?query=A%20shared%20room%20in%20a%20modern%20apartment%20with%20two%20beds%2C%20personal%20storage%20space%2C%20and%20common%20areas.%20The%20room%20appears%20clean%2C%20well-lit%2C%20and%20organized%20with%20enough%20space%20for%20two%20occupants.%20The%20design%20is%20functional%20yet%20comfortable%2C%20ideal%20for%20roommates%20or%20shared%20accommodation.&width=400&height=250&seq=8&orientation=landscape" alt="Shared Room" class="w-full h-48 object-cover object-top">
-                        <div class="absolute top-3 right-3">
-                            <button class="w-8 h-8 flex items-center justify-center bg-white rounded-full shadow-sm">
-                                <i class="ri-heart-line text-gray-600"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <div class="p-4">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-lg font-semibold">Shared Room in Apartment</h3>
-                            <span class="text-primary font-bold">$450/mo</span>
-                        </div>
-                        <div class="flex items-center text-gray-500 text-sm mb-3">
-                            <div class="w-4 h-4 flex items-center justify-center">
-                                <i class="ri-map-pin-line"></i>
-                            </div>
-                            <span class="ml-1">University District, Seattle</span>
-                        </div>
-                        <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Shared</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Wi-Fi</span>
-                            <span class="bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full">Student-friendly</span>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="https://readdy.ai/api/search-image?query=Professional%20headshot%20of%20a%20young%20man%20in%20his%20twenties%20with%20a%20friendly%20expression%2C%20wearing%20casual%20attire.%20The%20image%20has%20a%20clean%2C%20neutral%20background%20and%20good%20lighting%20to%20highlight%20facial%20features%20clearly.%20The%20person%20appears%20approachable%20and%20relaxed.&width=100&height=100&seq=9&orientation=squarish" alt="Owner" class="w-8 h-8 rounded-full object-cover">
-                                <span class="ml-2 text-sm">Jason T.</span>
-                            </div>
-                            <a href="#" class="text-primary text-sm hover:underline">Details</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="mt-8 text-center">
-                <a href="#" class="px-6 py-3 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors inline-block whitespace-nowrap">Browse All Properties</a>
-            </div>
-        </div>
-    </section>
+   
 
     <!-- नेपाली नोट: How It Works सेसन (कसरी काम गर्छ) -->
     <section class="py-16 bg-gray-50">
@@ -631,102 +496,9 @@
         </div>
     </section>
 
-    <!-- नेपाली नोट: Map सेसन (नक्सा र फिल्टरहरू) -->
-    <section class="py-16 bg-white">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Find Rooms Near You</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto mb-4">Use our interactive map to discover available properties in your desired location.</p>
-                
-                <div class="flex justify-center gap-2">
-                    <button class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap" id="show-map-btn">Show Map</button>
-                    <button class="px-4 py-2 border border-primary text-primary rounded-button hover:bg-gray-50 transition-colors whitespace-nowrap" id="list-view-btn">List View</button>
-                </div>
-            </div>
-            
-            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
-                <div class="h-96 w-full" id="map-placeholder" style="background-image: url('https://public.readdy.ai/gen_page/map_placeholder_1280x720.png'); background-size: cover; background-position: center;"></div>
-                
-                <div class="p-4 bg-white border-t" id="room-list" style="display:none;">
-                    <div class="flex flex-col gap-4">
-                        <!-- Room items will be populated by JavaScript -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
 
-    <!-- नेपाली नोट: Testimonials सेसन (प्रयोगकर्ताहरूको प्रतिक्रिया) -->
-    <section class="py-16 bg-gray-50">
-        <div class="container mx-auto px-4">
-            <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">What Our Users Say</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Hear from people who have found their perfect room or tenant through RoomFinder.</p>
-            </div>
-            
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="text-primary">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-4">"I found my dream apartment in just two days using RoomFinder. The filters made it easy to narrow down exactly what I was looking for, and the messaging system made contacting the owner simple."</p>
-                    <div class="flex items-center">
-                        <img src="https://readdy.ai/api/search-image?query=Headshot%20of%20a%20young%20professional%20woman%20with%20shoulder-length%20hair%2C%20smiling%20naturally%20at%20the%20camera.%20The%20image%20has%20good%20lighting%2C%20a%20neutral%20background%2C%20and%20captures%20a%20genuine%2C%20approachable%20expression.&width=100&height=100&seq=10&orientation=squarish" alt="Testimonial" class="w-10 h-10 rounded-full object-cover">
-                        <div class="ml-3">
-                            <h4 class="font-semibold">Emily Watson</h4>
-                            <p class="text-gray-500 text-sm">Room Seeker</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="text-primary">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-4">"As a property owner, RoomFinder has made it incredibly easy to list my rooms and find reliable tenants. The verification system gives me peace of mind, and I've had great experiences with all my renters."</p>
-                    <div class="flex items-center">
-                        <img src="https://readdy.ai/api/search-image?query=Headshot%20of%20a%20middle-aged%20man%20with%20short%20hair%20and%20glasses%2C%20smiling%20confidently%20at%20the%20camera.%20The%20image%20has%20good%20lighting%2C%20a%20neutral%20background%2C%20and%20captures%20a%20professional%2C%20trustworthy%20expression.&width=100&height=100&seq=11&orientation=squarish" alt="Testimonial" class="w-10 h-10 rounded-full object-cover">
-                        <div class="ml-3">
-                            <h4 class="font-semibold">Robert Chen</h4>
-                            <p class="text-gray-500 text-sm">Room Owner</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="flex items-center mb-4">
-                        <div class="text-primary">
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-fill"></i>
-                            <i class="ri-star-half-fill"></i>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-4">"The AI recommendation system on RoomFinder is amazing! It suggested properties that perfectly matched what I was looking for, even before I had fully defined my search criteria. Found my roommate through here too!"</p>
-                    <div class="flex items-center">
-                        <img src="https://readdy.ai/api/search-image?query=Headshot%20of%20a%20young%20man%20in%20his%20twenties%20with%20a%20casual%20style%2C%20smiling%20naturally%20at%20the%20camera.%20The%20image%20has%20good%20lighting%2C%20a%20neutral%20background%2C%20and%20captures%20a%20friendly%2C%20approachable%20expression.&width=100&height=100&seq=12&orientation=squarish" alt="Testimonial" class="w-10 h-10 rounded-full object-cover">
-                        <div class="ml-3">
-                            <h4 class="font-semibold">David Patel</h4>
-                            <p class="text-gray-500 text-sm">Room Seeker</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    
     <!-- नेपाली नोट: CTA सेसन (Call to Action) -->
     <section class="py-16 bg-primary">
         <div class="container mx-auto px-4 text-center">
