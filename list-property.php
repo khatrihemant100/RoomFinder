@@ -15,18 +15,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $price = $_POST['room-price'];
     $type = $_POST['room-type'];
     $desc = $_POST['room-description'];
+    $train_station = $_POST['room-train-station'];
+    $status = $_POST['room-status'];
+    
     $user_id = $_SESSION["user_id"];
 
-    // Handle image upload
     $imgPath = "";
     if (isset($_FILES["room-image"]) && $_FILES["room-image"]["error"] == 0) {
         $ext = pathinfo($_FILES["room-image"]["name"], PATHINFO_EXTENSION);
         $imgPath = "uploads/room_" . time() . "_" . rand(1000,9999) . "." . $ext;
-        move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath); // यो लाइन अनिवार्य!
+        move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath);
     }
 
-    $stmt = $conn->prepare("INSERT INTO rooms (user_id, title, location, price, type, description, image) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ississs", $user_id, $title, $location, $price, $type, $desc, $imgPath);
+    $stmt = $conn->prepare("INSERT INTO rooms (user_id, title, location, price, type, description, image, train_station, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("ississsss", $user_id, $title, $location, $price, $type, $desc, $imgPath, $train_station, $status);
 
     if ($stmt->execute()) {
         $msg = "Room listed successfully!";
@@ -35,6 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -204,6 +207,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             from { opacity: 0; transform: translateY(30px);}
             to { opacity: 1; transform: translateY(0);}
         }
+
+
+
+
+        /* Responsive */
+        .room-listing {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.room-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(74,144,226,0.1);
+    overflow: hidden;
+    display: flex;
+    width: 100%;
+    max-width: 700px;
+}
+
+.room-card img {
+    width: 220px;
+    height: 180px;
+    object-fit: cover;
+}
+
+.room-details {
+    padding: 16px;
+    flex: 1;
+}
+
+.room-details h3 {
+    color: #4A90E2;
+    margin-bottom: 8px;
+}
+
+.room-details p {
+    margin: 4px 0;
+    color: #374151;
+}
+
     </style>
 </head>
 <body>
@@ -256,10 +302,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <option value="hostel">Hostel</option>
                 </select>
             </div>
+             <div class="form-group">
+    <label for="room-train-station"><i class="ri-train-line"></i> Near Train Station</label>
+    <input type="text" id="room-train-station" name="room-train-station" required>
+        </div>
             <div class="form-group">
                 <label for="room-description"><i class="ri-file-text-line"></i> Description</label>
                 <textarea id="room-description" name="room-description" rows="4" required></textarea>
             </div>
+             <div class="form-group">
+            <label for="room-status"><i class="ri-checkbox-circle-line"></i> Room Status</label>
+            <select id="room-status" name="room-status" required>
+                <option value="">Select</option>
+                <option value="available">Available</option>
+                <option value="not_available">Not Available</option>
+                <option value="maintenance">Under Maintenance</option>
+                <option value="reserved">Reserved</option>
+              
+            </select>
+        </div>
             <div class="form-group">
                 <label for="room-image"><i class="ri-image-add-line"></i> Room Photo</label>
                 <input type="file" id="room-image" name="room-image" accept="image/*" required>
@@ -267,6 +328,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <img src="" alt="Preview">
                 </div>
             </div>
+     
+
+       
+
             <button type="submit">Upload Room</button>
         </form>
         <?php if(!empty($msg)): ?>

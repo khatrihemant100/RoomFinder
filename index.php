@@ -164,6 +164,8 @@
   }
   #ai-chat-send:hover {
     background: #357ABD;
+
+    
   }
 </style>
 </head>
@@ -245,7 +247,7 @@
                 
                 <div class="flex flex-col md:flex-row gap-4 mb-8">
                     <a href="#" class="px-6 py-3 bg-primary text-white rounded-button text-center hover:bg-primary/90 transition-colors whitespace-nowrap">Find a Room</a>
-                    <a href="#" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap">List Your Property</a>
+                    <a href="list-property.php" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap">List Your Property</a>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-lg p-4">
@@ -286,7 +288,7 @@
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:transform hover:scale-105">
                     <div class="h-48 bg-gray-200" style="background-image: url('https://readdy.ai/api/search-image?query=A%20person%20holding%20keys%20to%20a%20new%20apartment%2C%20standing%20in%20a%20doorway%20with%20a%20welcoming%20smile.%20The%20scene%20shows%20a%20well-maintained%20property%20with%20good%20lighting%2C%20clean%20interiors%2C%20and%20a%20sense%20of%20ownership%20and%20pride.%20The%20image%20conveys%20the%20concept%20of%20property%20management%20and%20renting%20out%20spaces.&width=600&height=400&seq=2&orientation=landscape'); background-size: cover; background-position: center;"></div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">Room Owner</h3>
+                        <h3 class="text-xl font-bold mb-2"><a href="/RoomFinder/index.php">Room Owner</h3></a>
                         <p class="text-gray-600 mb-4">List your property, manage bookings, and connect with potential tenants. Our platform makes property management simple and efficient.</p>
                         <ul class="mb-6 space-y-2">
                             <li class="flex items-start">
@@ -308,7 +310,7 @@
                                 <span class="ml-2">Get verified owner badge</span>
                             </li>
                         </ul>
-                        <a href="#" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Register as Owner</a>
+                        <a href="list-property.php" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Register as Owner</a>
                     </div>
                 </div>
                 
@@ -337,7 +339,7 @@
                                 <span class="ml-2">Direct messaging with owners</span>
                             </li>
                         </ul>
-                        <a href="#" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Register as Seeker</a>
+                        <a href="find-rooms.php" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Register as Seeker</a>
                     </div>
                 </div>
             </div>

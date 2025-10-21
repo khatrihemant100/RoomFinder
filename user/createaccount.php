@@ -64,8 +64,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <select name="role" id="role" onchange="toggleFields()" class="w-full p-3 border border-green-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400" required>
             <option value="">Select Role</option>
-            <option value="tenant">Tenant (Room Liner)</option>
-            <option value="landlord">Landlord (Room Provider)</option>
+            <option value="tenant">ROOM Finder</option>
+            <option value="landlord">Room Provider</option>
         </select>
 
         <!-- Landlord Fields -->
@@ -78,7 +78,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <option value="shared">Shared</option>
             </select>
             <input type="text" name="location" placeholder="Location" class="w-full p-3 border border-green-300 rounded-lg bg-gray-50">
-            <input type="number" name="rent" placeholder="Rent per Month" class="w-full p-3 border border-green-300 rounded-lg bg-gray-50">
+            <input type="number" name="rent" placeholder="Mobile Number..." class="w-full p-3 border border-green-300 rounded-lg bg-gray-50">
         </div>
 
         <!-- Tenant Fields -->
