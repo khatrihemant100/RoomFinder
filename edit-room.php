@@ -1,10 +1,10 @@
 <?php
-
 session_start();
 if (!isset($_SESSION["user_id"])) {
     header("Location: user/login.php");
     exit();
 }
+
 $conn = new mysqli("localhost", "root", "", "roomfinder");
 if ($conn->connect_error) die("DB error");
 
@@ -13,7 +13,7 @@ $user_id = $_SESSION["user_id"];
 $msg = "";
 
 // Fetch room and check ownership
-$stmt = $conn->prepare("SELECT * FROM rooms WHERE id=? AND user_id=?");
+$stmt = $conn->prepare("SELECT * FROM properties WHERE id=? AND user_id=?");
 $stmt->bind_param("ii", $id, $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -28,12 +28,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $location = $_POST['room-location'];
     $price = $_POST['room-price'];
     $type = $_POST['room-type'];
+    $status = $_POST['room-status'];
     $desc = $_POST['room-description'];
-    $imgPath = $room['image'];
+    $imgPath = $room['image_url'];
 
     // Handle new image upload
     if (isset($_FILES["room-image"]) && $_FILES["room-image"]["error"] == 0) {
-        // Delete old image if exists and not empty
+        // Delete old image if exists
         if ($imgPath && file_exists($imgPath)) unlink($imgPath);
 
         $ext = pathinfo($_FILES["room-image"]["name"], PATHINFO_EXTENSION);
@@ -41,10 +42,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath);
     }
 
-    $stmt = $conn->prepare("UPDATE rooms SET title=?, location=?, price=?, type=?, description=?, image=? WHERE id=? AND user_id=?");
-    $stmt->bind_param("ssisssii", $title, $location, $price, $type, $desc, $imgPath, $id, $user_id);
+    $stmt = $conn->prepare("UPDATE properties SET title=?, location=?, price=?, type=?, status=?, description=?, image_url=? WHERE id=? AND user_id=?");
+    $stmt->bind_param("ssdssssii", $title, $location, $price, $type, $status, $desc, $imgPath, $id, $user_id);
+
     if ($stmt->execute()) {
-        // Redirect to find-rooms.php with success message
         header("Location: find-rooms.php?msg=updated");
         exit();
     } else {
@@ -63,7 +64,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .edit-form h2 { color: #4A90E2; text-align: center; }
         .edit-form label { display: block; margin-top: 16px; }
         .edit-form input, .edit-form textarea, .edit-form select { width: 100%; padding: 8px; margin-top: 4px; border-radius: 6px; border: 1px solid #ddd; }
-        .edit-form button { margin-top: 20px; background: #4A90E2; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; }
+        .edit-form button { margin-top: 20px; background: #4A90E2; color: #fff; border: none; padding: 10px 24px; border-radius: 8px; font-size: 1rem; cursor:pointer; }
         .edit-form img { max-width: 100%; margin-top: 10px; border-radius: 8px; }
         .msg { margin-top: 10px; color: green; text-align: center; }
     </style>
@@ -84,11 +85,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <label>Room Type
             <input type="text" name="room-type" value="<?=htmlspecialchars($room['type'])?>" required>
         </label>
+        <label>Room Status
+            <select name="room-status" required>
+                <option value="available" <?= $room['status']=="available"?'selected':'' ?>>Available</option>
+                <option value="not_available" <?= $room['status']=="not_available"?'selected':'' ?>>Not Available</option>
+                <option value="maintenance" <?= $room['status']=="maintenance"?'selected':'' ?>>Under Maintenance</option>
+                <option value="reserved" <?= $room['status']=="reserved"?'selected':'' ?>>Reserved</option>
+            </select>
+        </label>
         <label>Description
             <textarea name="room-description" rows="4" required><?=htmlspecialchars($room['description'])?></textarea>
         </label>
         <label>Current Image:<br>
-            <img src="<?=htmlspecialchars($room['image'])?>" alt="Room Image">
+            <img src="<?=htmlspecialchars($room['image_url'])?>" alt="Room Image">
         </label>
         <label>Change Image
             <input type="file" name="room-image" accept="image/*">

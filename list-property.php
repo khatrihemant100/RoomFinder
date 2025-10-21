@@ -27,7 +27,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath);
     }
 
-    $stmt = $conn->prepare("INSERT INTO rooms (user_id, title, location, price, type, description, image, train_station, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    // Table name र image column नाम fix गरियो
+    $stmt = $conn->prepare("INSERT INTO properties (user_id, title, location, price, type, description, image_url, train_station, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("ississsss", $user_id, $title, $location, $price, $type, $desc, $imgPath, $train_station, $status);
 
     if ($stmt->execute()) {
@@ -37,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -315,8 +317,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <select id="room-status" name="room-status" required>
                 <option value="">Select</option>
                 <option value="available">Available</option>
-                <option value="not_available">Not Available</option>
-                <option value="maintenance">Under Maintenance</option>
+                <option value="not_available">Not_Available</option>
+                <option value="maintenance">Under_Maintenance</option>
                 <option value="reserved">Reserved</option>
               
             </select>

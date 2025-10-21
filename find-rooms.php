@@ -2,12 +2,17 @@
 session_start();
 $conn = new mysqli("localhost", "root", "", "roomfinder");
 
+// Check connection
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
+
 // API fetch for search (optional)
 if (isset($_GET['api']) && $_GET['api'] == '1') {
     $location = isset($_GET['location']) ? trim($_GET['location']) : '';
     $rooms = [];
     if ($location !== '') {
-        $stmt = $conn->prepare("SELECT * FROM rooms WHERE location LIKE ? ORDER BY created_at DESC");
+        $stmt = $conn->prepare("SELECT * FROM properties WHERE location LIKE ? ORDER BY created_at DESC");
         $like = '%' . $location . '%';
         $stmt->bind_param("s", $like);
         $stmt->execute();
@@ -22,7 +27,7 @@ if (isset($_GET['api']) && $_GET['api'] == '1') {
 
 // Fetch all rooms
 $rooms = [];
-$res = $conn->query("SELECT * FROM rooms ORDER BY created_at DESC");
+$res = $conn->query("SELECT * FROM properties ORDER BY created_at DESC");
 while($row = $res->fetch_assoc()) $rooms[] = $row;
 ?>
 <script>
@@ -42,8 +47,6 @@ while($row = $res->fetch_assoc()) $rooms[] = $row;
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
 <style>
-/* ==== Existing styles remain unchanged ==== */
-/* (Body, container, header, card, modals, etc.) */
 body { background: #fff !important; font-family: 'Inter', sans-serif; color: #333; min-height:100vh; }
 .container { max-width:1200px; margin:0 auto; }
 .rf-header { background:#fff; box-shadow:0 2px 8px rgba(74,144,226,0.08); padding:18px 0; margin-bottom:30px; }
@@ -62,12 +65,32 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 .card:hover { transform:translateY(-10px); box-shadow:0 15px 30px rgba(0,0,0,0.15); }
 .image { height:200px; background-size:cover; background-position:center; position:relative; }
 .rent-badge { position:absolute; top:15px; right:15px; background:linear-gradient(to right,#e74c3c,#c0392b); color:white; padding:8px 15px; border-radius:20px; font-weight:600; font-size:1.1rem; box-shadow:0 4px 10px rgba(0,0,0,0.2); }
+
+/* ==== Room Status Badge ==== */
+.status-badge {
+  position:absolute;
+  top:15px;
+  left:15px;
+  padding:6px 12px;
+  border-radius:20px;
+  color:white;
+  font-weight:600;
+  font-size:0.9rem;
+  box-shadow:0 3px 6px rgba(0,0,0,0.2);
+}
+.status-Available { background:#2ecc71; }      /* Green */
+.status-Not_available { background:#e74c3c; }  /* Red */
+.status-Under_Maintenance { background:#f39c12; }    /* Orange */
+.status-Reserved { background:#3498db; }       /* Blue */
+.status- { background:#7f8c8d; }        /* Grey */
+
 .card-content { padding:20px; flex:1; display:flex; flex-direction:column; }
 .card h4 { color:#2c3e50; margin-bottom:10px; font-size:1.3rem; }
 .card p { color:#7f8c8d; margin:8px 0; display:flex; align-items:center; }
 .card p i { margin-right:10px; color:#3498db; width:20px; text-align:center; }
 .details-btn { display:block; width:100%; text-align:center; background:#3498db; margin-top:15px; padding:10px; font-size:1rem; color:#fff; border:none; border-radius:8px; cursor:pointer; transition:background 0.2s; }
 .details-btn:hover { background:#217dbb; }
+
 /* Modal Styles */
 .modal { display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6); }
 .modal-content { background-color:#fff; margin:10% auto; padding:30px; border-radius:12px; width:90%; max-width:500px; position:relative; box-shadow:0 8px 30px rgba(0,0,0,0.2); animation:fadeIn 0.3s ease; }
@@ -154,6 +177,8 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
     <p><strong>Location:</strong> <span id="modalStation"></span></p>
     <p><strong>Type:</strong> <span id="modalType"></span></p>
     <p id="modalDescription"></p>
+    <p><strong>Train Station:</strong> <span id="modalTrainStation"></span></p>
+    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
   </div>
 </div>
 </div>
@@ -172,16 +197,20 @@ function displayRooms(roomsArray) {
 
   roomsArray.forEach(room=>{
     const isOwner = currentUserId && room.user_id == currentUserId;
+    const statusValue = room.status ? room.status.replace('_',' ') : 'Unknown';
+    const statusClass = room.status ? `status-${room.status}` : 'status-unknown';
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
 <div class="image">
-  <img src="${room.image}" alt="Room Image" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;">
+  <img src="${room.image_url}" alt="Room Image" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;">
   <div class="rent-badge">¥${room.price ? room.price.toLocaleString() : ''}</div>
+  <div class="status-badge ${statusClass}">${statusValue}</div>
 </div>
 <div class="card-content">
   <h4>${room.title || ''}</h4>
   <p><i class="fas fa-map-marker-alt"></i> ${room.location || ''}</p>
+  <p><i class="fas fa-train"></i> ${room.train_station || ''}</p>
   <p><i class="fas fa-home"></i> ${room.type || ''}</p>
   <p>${room.description || ''}</p>
   <button class="details-btn" data-id="${room.id}">View Details <i class="fas fa-arrow-right"></i></button>
@@ -199,11 +228,13 @@ function displayRooms(roomsArray) {
       const room = rooms.find(r=>r.id == roomId);
       if(room){
         document.getElementById('modalTitle').textContent = room.title||'';
-        document.getElementById('modalImage').src = room.image||'';
+        document.getElementById('modalImage').src = room.image_url||'';
         document.getElementById('modalRent').textContent = room.price ? `¥${room.price.toLocaleString()}`:'';
         document.getElementById('modalStation').textContent = room.location||'';
         document.getElementById('modalType').textContent = room.type||'';
         document.getElementById('modalDescription').textContent = room.description||'';
+        document.getElementById('modalTrainStation').textContent = room.train_station||'';
+        document.getElementById('modalStatus').textContent = room.status || 'Unknown';
         document.getElementById('roomModal').style.display = 'block';
       }
     });
@@ -247,36 +278,8 @@ function handleSearch(e){
 document.getElementById('modalClose').onclick = ()=>{ document.getElementById('roomModal').style.display='none'; };
 document.getElementById('inquiryModalClose').onclick = ()=>{ document.getElementById('inquiryModal').style.display='none'; };
 
-window.onclick = function(event){
-  if(event.target == document.getElementById('roomModal')) document.getElementById('roomModal').style.display='none';
-  if(event.target == document.getElementById('inquiryModal')) document.getElementById('inquiryModal').style.display='none';
-};
-
-// Inquiry Form Submit
-document.getElementById('inquiryForm').addEventListener('submit', function(e){
-  e.preventDefault();
-  const formData = new FormData(this);
-  fetch('submit-inquiry.php', { method:'POST', body:formData })
-  .then(res=>res.json())
-  .then(data=>{
-    if(data.success){
-      alert('Inquiry submitted successfully!');
-      document.getElementById('inquiryModal').style.display='none';
-      this.reset();
-    }else alert('Failed to submit inquiry. Try again.');
-  })
-  .catch(err=>{ console.error(err); alert('Error submitting inquiry.'); });
-});
-
-document.addEventListener('DOMContentLoaded', function(){
-  displayRooms(rooms);
-  searchForm.addEventListener('submit', handleSearch);
-});
+searchForm.addEventListener('submit', handleSearch);
+window.onload = ()=>{ displayRooms(rooms); };
 </script>
-
-<?php if (isset($_GET['msg']) && $_GET['msg'] === 'deleted'): ?>
-<div style="background:#e0ffe0;color:#207520;padding:10px 20px;margin:20px 0;border-radius:8px;text-align:center;">Room deleted successfully.</div>
-<?php endif; ?>
-
 </body>
 </html>
