@@ -98,6 +98,49 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 .close-btn:hover { color:#333; }
 .modal-content img { width:100%; border-radius:8px; margin-bottom:15px; }
 @keyframes fadeIn { from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
+/* Inquiry Modal Enhancement */
+#inquiryModal .modal-content {
+  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  color: #fff;
+  border: 2px solid #fff;
+}
+
+#inquiryModal h3 {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  font-family: 'times new roman', cursive;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+#inquiryModal input {
+  background: rgba(255,255,255,0.9);
+  border: none;
+  color: #333;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#inquiryModal input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  outline: none;
+}
+
+#inquiryModal button {
+  background: linear-gradient(to right, #ff416c, #ff4b2b);
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: all 0.3s ease;
+}
+
+#inquiryModal button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  background: linear-gradient(to right, #ff4b2b, #ff416c);
+}
+
+
 </style>
 </head>
 <body>
