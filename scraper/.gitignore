@@ -1,0 +1,4 @@
+.venv
+env.php
+__pycache__
+data/*.json
