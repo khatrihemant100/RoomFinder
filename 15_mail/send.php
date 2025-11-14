@@ -1,0 +1,41 @@
+<?php
+// TODO: セッション開始
+session_start();
+
+// Contactクラス読み込み
+require './Contact.php';
+
+// TODO: POSTデータ受け取り
+$name  = (isset($_POST['name'])) ? $_POST['name'] : "";
+$email = (isset($_POST['email'])) ? $_POST['email'] : "";
+$body  = (isset($_POST['body'])) ? $_POST['body'] : "";
+
+// デバッグ用（確認したコメントアウトすること）
+// var_dump($name, $email, $body);
+// exit;
+
+// TODO: セッションデータ保存
+$_SESSION['name'] = $name;
+$_SESSION['email'] = $email;
+$_SESSION['body'] = $body;
+
+// Contactクラスのインスタンス化
+$contact = new Contact();
+
+// TODO: メール送信: send() : $name, $email, $body
+$result = $contact->send($name, $email, $body);
+if ($result === true) {
+    // セッション削除
+    unset($_SESSION['name']);
+    unset($_SESSION['email']);
+    unset($_SESSION['body']);
+
+    // TODO: 結果画面へリダイレクト: result.php
+    header('Location: result.php');
+    exit;
+} else {
+    // 送信失敗の場合は、エラーメッセージをセッションに保存してフォーム画面へリダイレクト
+    $_SESSION['error'] = 'メールの送信に失敗しました。' . $result;
+    header('Location: index.php');
+    exit;
+}
