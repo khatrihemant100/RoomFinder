@@ -28,7 +28,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // Table name र image column नाम fix गरियो
-    $stmt = $conn->prepare("INSERT INTO properties (user_id, title, location, price, type, description, image_url, train_station, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO properties (user_id, title, location, price, type, train_station, status, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
     $stmt->bind_param("ississsss", $user_id, $title, $location, $price, $type, $desc, $imgPath, $train_station, $status);
 
     if ($stmt->execute()) {
