@@ -28,22 +28,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $location = $_POST['room-location'];
     $price = $_POST['room-price'];
     $type = $_POST['room-type'];
+    $train_station = $_POST['room-train-station'] ?? '';
     $status = $_POST['room-status'];
     $desc = $_POST['room-description'];
     $imgPath = $room['image_url'];
 
     // Handle new image upload
     if (isset($_FILES["room-image"]) && $_FILES["room-image"]["error"] == 0) {
-        // Delete old image if exists
-        if ($imgPath && file_exists($imgPath)) unlink($imgPath);
-
-        $ext = pathinfo($_FILES["room-image"]["name"], PATHINFO_EXTENSION);
-        $imgPath = "uploads/room_" . time() . "_" . rand(1000,9999) . "." . $ext;
-        move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath);
+        // File validation
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $ext = strtolower(pathinfo($_FILES["room-image"]["name"], PATHINFO_EXTENSION));
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (in_array($ext, $allowed) && $_FILES["room-image"]["size"] <= $maxSize) {
+            // Delete old image if exists
+            if ($imgPath && file_exists($imgPath)) unlink($imgPath);
+            
+            $imgPath = "uploads/room_" . time() . "_" . rand(1000,9999) . "." . $ext;
+            if (!move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath)) {
+                $msg = "Error uploading image. Keeping old image.";
+                $imgPath = $room['image_url'];
+            }
+        } else {
+            $msg = "Invalid file type or size too large. Keeping old image.";
+            $imgPath = $room['image_url'];
+        }
     }
 
-    $stmt = $conn->prepare("UPDATE properties SET title=?, location=?, price=?, type=?, status=?, description=?, image_url=? WHERE id=? AND user_id=?");
-    $stmt->bind_param("ssdssssii", $title, $location, $price, $type, $status, $desc, $imgPath, $id, $user_id);
+    $stmt = $conn->prepare("UPDATE properties SET title=?, location=?, price=?, type=?, train_station=?, status=?, description=?, image_url=? WHERE id=? AND user_id=?");
+    $stmt->bind_param("ssdsssssii", $title, $location, $price, $type, $train_station, $status, $desc, $imgPath, $id, $user_id);
 
     if ($stmt->execute()) {
         header("Location: find-rooms.php?msg=updated");
@@ -83,14 +96,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="number" name="room-price" value="<?=htmlspecialchars($room['price'])?>" required>
         </label>
         <label>Room Type
-            <input type="text" name="room-type" value="<?=htmlspecialchars($room['type'])?>" required>
+            <input type="text" name="room-type" value="<?=htmlspecialchars($room['type'] ?? '')?>" required>
+        </label>
+        <label>Near Train Station
+            <input type="text" name="room-train-station" value="<?=htmlspecialchars($room['train_station'] ?? '')?>" required>
         </label>
         <label>Room Status
             <select name="room-status" required>
-                <option value="available" <?= $room['status']=="available"?'selected':'' ?>>Available</option>
-                <option value="not_available" <?= $room['status']=="not_available"?'selected':'' ?>>Not Available</option>
-                <option value="maintenance" <?= $room['status']=="maintenance"?'selected':'' ?>>Under Maintenance</option>
-                <option value="reserved" <?= $room['status']=="reserved"?'selected':'' ?>>Reserved</option>
+                <option value="available" <?= ($room['status'] ?? '')=="available"?'selected':'' ?>>Available</option>
+                <option value="Not_available" <?= ($room['status'] ?? '')=="Not_available"?'selected':'' ?>>Not Available</option>
+                <option value="Under_Maintenance" <?= ($room['status'] ?? '')=="Under_Maintenance"?'selected':'' ?>>Under Maintenance</option>
+                <option value="Reserved" <?= ($room['status'] ?? '')=="Reserved"?'selected':'' ?>>Reserved</option>
             </select>
         </label>
         <label>Description

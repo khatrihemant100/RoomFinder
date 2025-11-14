@@ -15,9 +15,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($id, $name, $hashed_password, $role);
         $stmt->fetch();
         if (password_verify($password, $hashed_password)) {
+            // Set session variables
             $_SESSION["user_id"] = $id;
-            $_SESSION["name"] = $name;
+            // Ensure name is set - use trimmed name or fallback
+            $userName = trim($name);
+            $_SESSION["name"] = !empty($userName) ? $userName : "User";
             $_SESSION["role"] = $role;
+            
+            // Regenerate session ID for security
+            session_regenerate_id(true);
+            
+            // Debug: Uncomment to check session values
+            // error_log("Login - User ID: " . $id . ", Name: " . $_SESSION["name"]);
+            
             header("Location: ../index.php");
             exit();
         } else {
@@ -45,7 +55,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <button type="submit" class="w-full p-3 bg-green-400 text-white rounded-lg font-bold hover:bg-green-500 transition-colors">Login</button>
     </form>
-    <a class="block text-center mt-4 text-green-500 hover:underline" href="create_account.php">Don't have an account? Sign Up</a>
+    <a class="block text-center mt-4 text-green-500 hover:underline" href="createaccount.php">Don't have an account? Sign Up</a>
 </div>
 </body>
 </html>

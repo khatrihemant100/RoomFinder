@@ -7,31 +7,83 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim($_POST["name"]);
     $email = trim($_POST["email"]);
     $password = $_POST["password"];
-    $role = $_POST["role"];
+    $role = trim($_POST["role"] ?? '');
 
-    // Landlord fields
-    $room_capacity = isset($_POST["room_capacity"]) ? $_POST["room_capacity"] : null;
-    $room_type = isset($_POST["room_type"]) ? $_POST["room_type"] : null;
-    $location = isset($_POST["location"]) ? $_POST["location"] : null;
-    $rent = isset($_POST["rent"]) ? $_POST["rent"] : null;
+    // Validate and normalize role (database accepts 'owner' or 'seeker')
+    if ($role === 'landlord' || $role === 'owner') {
+        $role = 'owner';
+    } elseif ($role === 'tenant' || $role === 'seeker') {
+        $role = 'seeker';
+    } else {
+        $role = ''; // Invalid role
+    }
 
-    // Tenant fields
-    $budget_min = isset($_POST["budget_min"]) ? $_POST["budget_min"] : null;
-    $budget_max = isset($_POST["budget_max"]) ? $_POST["budget_max"] : null;
-    $preferred_location = isset($_POST["preferred_location"]) ? $_POST["preferred_location"] : null;
-    $roommate_count = isset($_POST["roommate_count"]) ? $_POST["roommate_count"] : null;
-    $preferred_room_type = isset($_POST["preferred_room_type"]) ? $_POST["preferred_room_type"] : null;
-
-    if ($name && $email && $password && $role) {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users (name, email, password, role, room_capacity, room_type, location, rent, budget_min, budget_max, preferred_location, roommate_count, preferred_room_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssissiiisii", $name, $email, $hashed_password, $role, $room_capacity, $room_type, $location, $rent, $budget_min, $budget_max, $preferred_location, $roommate_count, $preferred_room_type);
-        if ($stmt->execute()) {
-            $message = "<div class='success'>User account created successfully. <a href='login.php'>Login here</a>.</div>";
+    // Validate all required fields
+    if (empty($name) || empty($email) || empty($password) || empty($role)) {
+        $message = "<div class='error'>All required fields must be filled. Please select a valid role.</div>";
+    } elseif ($name && $email && $password && $role) {
+        // Validate email format
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $message = "<div class='error'>Invalid email format.</div>";
+        } elseif (strlen($password) < 6) {
+            $message = "<div class='error'>Password must be at least 6 characters long.</div>";
         } else {
-            $message = "<div class='error'>Email already exists or error occurred.</div>";
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            
+            // Only insert columns that exist in users table: id, name, email, password, role
+            try {
+                $stmt = $conn->prepare("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)");
+                if (!$stmt) {
+                    $message = "<div class='error'>Database error: " . htmlspecialchars($conn->error) . "</div>";
+                } else {
+                    $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
+                    
+                    // Check if email already exists before attempting insert
+                    $checkStmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+                    $checkStmt->bind_param("s", $email);
+                    $checkStmt->execute();
+                    $result = $checkStmt->get_result();
+                    
+                    if ($result->num_rows > 0) {
+                        $message = "<div class='error'>Email already exists. Please use a different email or <a href='login.php'>login here</a>.</div>";
+                        $checkStmt->close();
+                        $stmt->close();
+                    } else {
+                        $checkStmt->close();
+                        
+                        // Now try to insert
+                        if ($stmt->execute()) {
+                            $message = "<div class='success'>User account created successfully. <a href='login.php'>Login here</a>.</div>";
+                        } else {
+                            // Get detailed error message
+                            $errorMsg = $stmt->error;
+                            if (strpos($errorMsg, 'Duplicate entry') !== false || strpos($errorMsg, 'email') !== false) {
+                                $message = "<div class='error'>Email already exists. Please use a different email or <a href='login.php'>login here</a>.</div>";
+                            } elseif (strpos($errorMsg, 'role') !== false) {
+                                $message = "<div class='error'>Invalid role. Please select a valid role.</div>";
+                            } else {
+                                $message = "<div class='error'>Error: " . htmlspecialchars($errorMsg) . "</div>";
+                            }
+                            error_log("Account creation error: " . $errorMsg);
+                        }
+                        $stmt->close();
+                    }
+                }
+            } catch (mysqli_sql_exception $e) {
+                // Handle SQL exceptions (like duplicate email)
+                $errorMsg = $e->getMessage();
+                if (strpos($errorMsg, 'Duplicate entry') !== false || strpos($errorMsg, 'email') !== false) {
+                    $message = "<div class='error'>Email already exists. Please use a different email or <a href='login.php'>login here</a>.</div>";
+                } else {
+                    $message = "<div class='error'>Database error occurred. Please try again.</div>";
+                }
+                error_log("Account creation exception: " . $errorMsg);
+            } catch (Exception $e) {
+                // Handle any other exceptions
+                $message = "<div class='error'>An error occurred. Please try again.</div>";
+                error_log("Account creation general exception: " . $e->getMessage());
+            }
         }
-        $stmt->close();
     } else {
         $message = "<div class='error'>All required fields must be filled.</div>";
     }
@@ -48,8 +100,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const landlordFields = document.getElementById("landlordFields");
             const tenantFields = document.getElementById("tenantFields");
 
-            landlordFields.style.display = role === "landlord" ? "block" : "none";
-            tenantFields.style.display = role === "tenant" ? "block" : "none";
+            landlordFields.style.display = (role === "owner" || role === "landlord") ? "block" : "none";
+            tenantFields.style.display = (role === "seeker" || role === "tenant") ? "block" : "none";
         }
     </script>
 </head>
@@ -64,9 +116,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <select name="role" id="role" onchange="toggleFields()" class="w-full p-3 border border-green-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400" required>
             <option value="">Select Role</option>
-            <option value="tenant">ROOM Finder</option>
-            <option value="landlord">Room Provider</option>
+            <option value="seeker">Room Seeker</option>
+            <option value="owner">Room Owner</option>
         </select>
+        <?php if (isset($_POST["role"]) && empty($role) && !empty($_POST["role"])): ?>
+            <div class='error text-red-500 text-sm mt-1'>Invalid role selected. Please choose Room Seeker or Room Owner.</div>
+        <?php endif; ?>
 
         <!-- Landlord Fields -->
         <div id="landlordFields" class="space-y-3" style="display:none;">

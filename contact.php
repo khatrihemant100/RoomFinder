@@ -1,4 +1,5 @@
 <?php
+session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn = new mysqli("localhost", "root", "", "roomfinder");
     if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
@@ -127,14 +128,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="hidden md:flex items-center space-x-6">
                 <a href="index.php" class="text-gray-700 hover:text-primary transition-colors">Home</a>
                 <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
+                <?php endif; ?>
                 <a href="about.html" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
                 <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
             </div>
             <div class="flex items-center space-x-4">
                 <?php if(isset($_SESSION["user_id"])): ?>
                     <span class="px-4 py-2 text-primary font-semibold rounded-button bg-primary/10">
-                        <?php echo htmlspecialchars($_SESSION["name"]); ?>
+                        <?php echo htmlspecialchars($_SESSION["name"] ?? "User"); ?>
                     </span>
                     <a href="user/logout.php" class="px-4 py-2 bg-secondary text-white rounded-button hover:bg-secondary/90 transition-colors whitespace-nowrap">Logout</a>
                 <?php else: ?>

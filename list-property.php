@@ -1,7 +1,8 @@
 <?php
 session_start();
-if (!isset($_SESSION["user_id"])) {
-    header("Location: user/login.php");
+// Check if user is logged in and is an owner
+if (!isset($_SESSION["user_id"]) || !isset($_SESSION["role"]) || $_SESSION["role"] !== 'owner') {
+    header("Location: user/login.php?error=owner_only");
     exit();
 }
 
@@ -18,25 +19,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $train_station = $_POST['room-train-station'];
     $status = $_POST['room-status'];
     
+
+    
     $user_id = $_SESSION["user_id"];
 
     $imgPath = "";
     if (isset($_FILES["room-image"]) && $_FILES["room-image"]["error"] == 0) {
-        $ext = pathinfo($_FILES["room-image"]["name"], PATHINFO_EXTENSION);
-        $imgPath = "uploads/room_" . time() . "_" . rand(1000,9999) . "." . $ext;
-        move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath);
-    }
-
-    // Table name र image column नाम fix गरियो
-    $stmt = $conn->prepare("INSERT INTO properties (user_id, title, location, price, type, train_station, status, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-    $stmt->bind_param("ississsss", $user_id, $title, $location, $price, $type, $desc, $imgPath, $train_station, $status);
-
-    if ($stmt->execute()) {
-        $msg = "Room listed successfully!";
+        // File validation
+        $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        $ext = strtolower(pathinfo($_FILES["room-image"]["name"], PATHINFO_EXTENSION));
+        $maxSize = 5 * 1024 * 1024; // 5MB
+        
+        if (!in_array($ext, $allowed)) {
+            $msg = "Invalid file type. Only JPG, PNG, GIF, and WEBP are allowed.";
+        } elseif ($_FILES["room-image"]["size"] > $maxSize) {
+            $msg = "File size too large. Maximum size is 5MB.";
+        } else {
+            $imgPath = "uploads/room_" . time() . "_" . rand(1000,9999) . "." . $ext;
+            if (!move_uploaded_file($_FILES["room-image"]["tmp_name"], $imgPath)) {
+                $msg = "Error uploading image. Please try again.";
+            }
+        }
     } else {
-        $msg = "Error. Please try again.";
+        $msg = "Please select an image file.";
     }
+
+    // Only proceed if no errors
+    if (empty($msg) && !empty($imgPath)) {
+        // Fixed: Correct parameter order matching SQL query
+        $stmt = $conn->prepare("INSERT INTO properties (user_id, title, location, price, type, train_station, status, description, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ississsss", $user_id, $title, $location, $price, $type, $train_station, $status, $desc, $imgPath);
+
+        if ($stmt->execute()) {
+            $msg = "Room listed successfully!";
+            // Clear form by redirecting
+            header("Location: list-property.php?success=1");
+            exit();
+        } else {
+            $msg = "Error: " . $conn->error;
+        }
+        $stmt->close();
+    }
+    $conn->close();
 }
 ?>
 
@@ -263,13 +287,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <nav class="nav">
                 <a href="index.php">Home</a>
                 <a href="find-rooms.php">Find Rooms</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php">List Property</a>
+                <?php endif; ?>
                 <a href="about.html">About Us</a>
                 <a href="contact.php">Contact</a>
             </nav>
             <div class="user-area">
                 <?php if(isset($_SESSION["user_id"])): ?>
-                    <span><?php echo htmlspecialchars($_SESSION["name"]); ?></span>
+                    <span><?php echo htmlspecialchars($_SESSION["name"] ?? "User"); ?></span>
                     <a href="user/logout.php">Logout</a>
                 <?php else: ?>
                     <a href="user/login.php" style="background:#4A90E2;">Sign In</a>
@@ -337,8 +363,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             <button type="submit">Upload Room</button>
         </form>
-        <?php if(!empty($msg)): ?>
-            <div style="margin-bottom:16px; color:<?php echo ($msg=='Room listed successfully!')?'#219150':'#c00'; ?>;font-weight:bold;">
+        <?php if(isset($_GET['success']) && $_GET['success'] == 1): ?>
+            <div style="margin-bottom:16px; color:#219150;font-weight:bold;padding:12px;background:#d4edda;border-radius:8px;border:1px solid #c3e6cb;">
+                Room listed successfully!
+            </div>
+        <?php elseif(!empty($msg)): ?>
+            <div style="margin-bottom:16px; color:#c00;font-weight:bold;padding:12px;background:#f8d7da;border-radius:8px;border:1px solid #f5c6cb;">
                 <?php echo htmlspecialchars($msg); ?>
             </div>
         <?php endif; ?>

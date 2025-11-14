@@ -209,7 +209,9 @@
             <div class="hidden md:flex items-center space-x-6">
                 <a href="index.php" class="text-gray-700 hover:text-primary transition-colors">Home</a>
                 <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
+                <?php endif; ?>
                 <a href="about.php" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
                 <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
             </div>
@@ -224,7 +226,27 @@
                 </div>
                 <?php if(isset($_SESSION["user_id"])): ?>
                     <span class="px-4 py-2 text-primary font-semibold rounded-button bg-primary/10">
-                        <?php echo htmlspecialchars($_SESSION["name"]); ?>
+                        <?php 
+                        // Display user name from session
+                        // If name is not set or empty, try to get from database
+                        if (empty($_SESSION["name"]) || $_SESSION["name"] === "User") {
+                            // Try to reload name from database
+                            require_once 'db.php';
+                            $stmt = $conn->prepare("SELECT name FROM users WHERE id = ?");
+                            $stmt->bind_param("i", $_SESSION["user_id"]);
+                            $stmt->execute();
+                            $stmt->bind_result($dbName);
+                            if ($stmt->fetch() && !empty(trim($dbName))) {
+                                $_SESSION["name"] = trim($dbName);
+                                echo htmlspecialchars($_SESSION["name"]);
+                            } else {
+                                echo "User";
+                            }
+                            $stmt->close();
+                        } else {
+                            echo htmlspecialchars($_SESSION["name"]);
+                        }
+                        ?>
                     </span>
                     <a href="user/logout.php" class="px-4 py-2 bg-secondary text-white rounded-button hover:bg-secondary/90 transition-colors whitespace-nowrap">Logout</a>
                 <?php else: ?>
@@ -246,8 +268,10 @@
                 <p class="text-lg text-gray-700 mb-8">Discover thousands of rooms and apartments for rent. Whether you're looking to list your property or find your next home, we've got you covered.</p>
                 
                 <div class="flex flex-col md:flex-row gap-4 mb-8">
-                    <a href="#" class="px-6 py-3 bg-primary text-white rounded-button text-center hover:bg-primary/90 transition-colors whitespace-nowrap">Find a Room</a>
+                    <a href="find-rooms.php" class="px-6 py-3 bg-primary text-white rounded-button text-center hover:bg-primary/90 transition-colors whitespace-nowrap">Find a Room</a>
+                    <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                     <a href="list-property.php" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap">List Your Property</a>
+                    <?php endif; ?>
                 </div>
                 
                 <div class="bg-white rounded-lg shadow-lg p-4">
@@ -310,7 +334,9 @@
                                 <span class="ml-2">Get verified owner badge</span>
                             </li>
                         </ul>
-                        <a href="list-property.php" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Register as Owner</a>
+                        <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
+                        <a href="list-property.php" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">List Your Property</a>
+                        <?php endif; ?>
                     </div>
                 </div>
                 
@@ -508,8 +534,10 @@
             <p class="text-white/80 max-w-2xl mx-auto mb-8">Join thousands of satisfied users who have found their ideal living situation through RoomFinder.</p>
             
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="#" class="px-6 py-3 bg-white text-primary rounded-button hover:bg-gray-100 transition-colors whitespace-nowrap">Find a Room</a>
-                <a href="#" class="px-6 py-3 border border-white text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">List Your Property</a>
+                <a href="find-rooms.php" class="px-6 py-3 bg-white text-primary rounded-button hover:bg-gray-100 transition-colors whitespace-nowrap">Find a Room</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
+                <a href="list-property.php" class="px-6 py-3 border border-white text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">List Your Property</a>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -542,7 +570,9 @@
                     <ul class="space-y-2">
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Find Rooms</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">List Property</a></li>
+                        <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
+                        <li><a href="list-property.php" class="text-gray-400 hover:text-white transition-colors">List Property</a></li>
+                        <?php endif; ?>
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
@@ -645,34 +675,29 @@ document.getElementById('search-modal').onclick = function(e) {
   if (e.target === this) this.style.display = 'none';
 };
 
-// RoomFinder AI Chat (Gemini API)
-const GEMINI_API_KEY = "AIzaSyAYoOAIrd7-WYQZzdYbsAjAatGEkKyB6oA";
+// RoomFinder AI Chat - Using server-side API (secure)
 async function askGeminiAI(userMessage) {
   if (!userMessage) return "Please enter a message.";
-  // Use v1 endpoint, not v1beta
-  const url = "https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=" + GEMINI_API_KEY;
-  const body = {
-    contents: [
-      {
-        role: "user",
-        parts: [{ text: userMessage }]
-      }
-    ]
-  };
-  console.log("Sending to Gemini:", JSON.stringify(body));
-  const res = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  console.log("Gemini response:", data);
-  if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text) {
-    return data.candidates[0].content.parts[0].text;
-  } else if (data.error && data.error.message) {
-    return "AI Error: " + data.error.message;
-  } else {
-    return "Sorry, I couldn't understand.";
+  
+  try {
+    const res = await fetch("api/ai-chat.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: userMessage })
+    });
+    
+    const data = await res.json();
+    
+    if (data.success && data.response) {
+      return data.response;
+    } else if (data.error) {
+      return "AI Error: " + data.error;
+    } else {
+      return "Sorry, I couldn't understand. Please try again.";
+    }
+  } catch (error) {
+    console.error("AI Chat Error:", error);
+    return "Sorry, AI service is not available right now. Please try again later.";
   }
 }
 

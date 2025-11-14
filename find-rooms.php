@@ -98,46 +98,152 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 .close-btn:hover { color:#333; }
 .modal-content img { width:100%; border-radius:8px; margin-bottom:15px; }
 @keyframes fadeIn { from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
-/* Inquiry Modal Enhancement */
+/* Inquiry Modal Enhancement with Animations */
+#inquiryModal {
+  animation: fadeIn 0.3s ease;
+}
+
 #inquiryModal .modal-content {
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #4A90E2 0%, #43c6ac 100%);
   color: #fff;
   border: 2px solid #fff;
+  animation: slideDown 0.4s ease;
+  box-shadow: 0 20px 60px rgba(74, 144, 226, 0.4);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
 }
 
 #inquiryModal h3 {
   text-align: center;
   font-size: 1.8rem;
-  margin-bottom: 20px;
-  font-family: 'times new roman', cursive;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+  margin-bottom: 10px;
+  font-family: 'Inter', sans-serif;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  animation: fadeIn 0.6s ease;
 }
 
-#inquiryModal input {
-  background: rgba(255,255,255,0.9);
-  border: none;
+#inquiryModal input,
+#inquiryModal textarea {
+  background: rgba(255,255,255,0.95);
+  border: 2px solid rgba(255,255,255,0.3);
   color: #333;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: all 0.3s ease;
+  border-radius: 8px;
 }
 
-#inquiryModal input:focus {
-  transform: scale(1.02);
-  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+#inquiryModal input:focus,
+#inquiryModal textarea:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
   outline: none;
+  border-color: #4A90E2;
+  background: #fff;
 }
 
-#inquiryModal button {
-  background: linear-gradient(to right, #ff416c, #ff4b2b);
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+#inquiryModal input:hover,
+#inquiryModal textarea:hover {
+  border-color: rgba(255,255,255,0.5);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+#inquiryModal label {
   transition: all 0.3s ease;
 }
 
-#inquiryModal button:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-  background: linear-gradient(to right, #ff4b2b, #ff416c);
+#inquiryModal label:hover {
+  transform: translateX(5px);
+}
+
+#inquiryModal button[type="submit"] {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(17, 153, 142, 0.4);
+  transition: all 0.3s ease;
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+#inquiryModal button[type="submit"]:before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+#inquiryModal button[type="submit"]:hover:before {
+  width: 300px;
+  height: 300px;
+}
+
+#inquiryModal button[type="submit"]:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 12px 30px rgba(17, 153, 142, 0.5);
+}
+
+#inquiryModal button[type="submit"]:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+#inquiryModal button[type="submit"]:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+#inquirySuccess {
+  animation: slideInSuccess 0.5s ease;
+}
+
+@keyframes slideInSuccess {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+#inquiryError {
+  animation: shake 0.5s ease;
+}
+
+.close-btn {
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  transform: rotate(90deg) scale(1.2);
+  color: #fff;
 }
 
 
@@ -147,16 +253,18 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 <header class="rf-header">
 <div class="container">
   <a href="index.php" class="logo">RoomFinder</a>
-  <nav class="nav">
-    <a href="index.php">Home</a>
-    <a href="find-rooms.php">Find Rooms</a>
-    <a href="list-property.php">List Property</a>
-    <a href="about.html">About Us</a>
-    <a href="contact.php">Contact</a>
-  </nav>
+            <nav class="nav">
+                <a href="index.php">Home</a>
+                <a href="find-rooms.php">Find Rooms</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
+                <a href="list-property.php">List Property</a>
+                <?php endif; ?>
+                <a href="about.html">About Us</a>
+                <a href="contact.php">Contact</a>
+            </nav>
   <div class="user-area">
     <?php if(isset($_SESSION["user_id"])): ?>
-      <span><?php echo htmlspecialchars($_SESSION["name"]); ?></span>
+      <span><?php echo htmlspecialchars($_SESSION["name"] ?? "User"); ?></span>
       <a href="user/logout.php">Logout</a>
     <?php else: ?>
       <a href="user/login.php" style="background:#4A90E2;">Sign In</a>
@@ -198,14 +306,76 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 <div id="inquiryModal" class="modal">
   <div class="modal-content">
     <span id="inquiryModalClose" class="close-btn">&times;</span>
-    <h3>Room Inquiry</h3>
+    <h3 style="color:#fff;text-shadow:2px 2px 4px rgba(0,0,0,0.2);">📧 Room Inquiry Form</h3>
+    <p style="text-align:center;color:rgba(255,255,255,0.95);margin-bottom:25px;font-size:0.95rem;background:rgba(255,255,255,0.1);padding:10px;border-radius:6px;">Fill out the form below to contact the property owner</p>
     <form id="inquiryForm">
       <input type="hidden" id="inquiryRoomId" name="room_id" />
-      <div style="margin-bottom:12px;"><label><strong>Name:</strong></label><input type="text" id="inqName" name="name" required class="w-full border px-3 py-2 rounded" /></div>
-      <div style="margin-bottom:12px;"><label><strong>Email:</strong></label><input type="email" id="inqEmail" name="email" required class="w-full border px-3 py-2 rounded" /></div>
-      <div style="margin-bottom:12px;"><label><strong>Phone:</strong></label><input type="text" id="inqPhone" name="phone" required class="w-full border px-3 py-2 rounded" /></div>
-      <div style="margin-bottom:12px;"><label><strong>Date to Visit:</strong></label><input type="date" id="inqDate" name="visit_date" required class="w-full border px-3 py-2 rounded" /></div>
-      <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded">Submit Inquiry</button>
+      <input type="hidden" id="inquiryRoomTitle" name="room_title" />
+      
+      <div style="margin-bottom:18px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
+          <i class="fas fa-user" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Your Name *
+        </label>
+        <input type="text" id="inqName" name="name" required 
+               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
+               placeholder="Enter your full name" />
+      </div>
+      
+      <div style="margin-bottom:18px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
+          <i class="fas fa-envelope" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Email Address *
+        </label>
+        <input type="email" id="inqEmail" name="email" required 
+               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
+               placeholder="your.email@example.com" />
+      </div>
+      
+      <div style="margin-bottom:18px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
+          <i class="fas fa-phone" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Phone Number *
+        </label>
+        <input type="tel" id="inqPhone" name="phone" required 
+               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
+               placeholder="+81-XX-XXXX-XXXX" />
+      </div>
+      
+      <div style="margin-bottom:18px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
+          <i class="fas fa-calendar-alt" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Preferred Visit Date *
+        </label>
+        <input type="date" id="inqDate" name="visit_date" required 
+               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
+               min="<?php echo date('Y-m-d'); ?>" />
+        <small style="color:rgba(255,255,255,0.9);font-size:0.85rem;display:block;margin-top:5px;">Select your preferred date for property viewing</small>
+      </div>
+      
+      <div style="margin-bottom:20px;">
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
+          <i class="fas fa-comment-alt" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Additional Message
+        </label>
+        <textarea id="inqMessage" name="message" rows="4" 
+                  style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;resize:vertical;" 
+                  placeholder="Tell the owner about your interest, questions, or special requirements..."></textarea>
+        <small style="color:rgba(255,255,255,0.9);font-size:0.85rem;display:block;margin-top:5px;">Optional: Add any additional information or questions</small>
+      </div>
+      
+      <div id="inquirySuccess" style="display:none;background:rgba(255,255,255,0.95);color:#155724;padding:15px;border-radius:8px;margin-bottom:15px;border:2px solid #28a745;box-shadow:0 4px 12px rgba(40,167,69,0.3);">
+        <i class="fas fa-check-circle" style="color:#28a745;margin-right:8px;"></i> <strong>Success!</strong> <span id="successMessage">Your inquiry has been submitted.</span>
+      </div>
+      
+      <div id="inquiryError" style="display:none;background:rgba(255,255,255,0.95);color:#721c24;padding:15px;border-radius:8px;margin-bottom:15px;border:2px solid #dc3545;box-shadow:0 4px 12px rgba(220,53,69,0.3);">
+        <i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:8px;"></i> <strong>Error:</strong> <span id="errorMessage"></span>
+      </div>
+      
+      <button type="submit" id="inquirySubmitBtn" 
+              class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
+        <i class="fas fa-paper-plane"></i>
+        <span>Send Inquiry</span>
+      </button>
+      
+      <p style="text-align:center;margin-top:15px;color:rgba(255,255,255,0.95);font-size:0.9rem;background:rgba(255,255,255,0.1);padding:10px;border-radius:6px;">
+        <i class="fas fa-info-circle" style="margin-right:5px;"></i> The property owner will receive your inquiry via email
+      </p>
     </form>
   </div>
 </div>
@@ -224,7 +394,7 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
     <p><strong>Status:</strong> <span id="modalStatus"></span></p>
   </div>
 </div>
-</div>
+
 
 <script>
 const rooms = typeof dbRooms !== "undefined" ? dbRooms : [];
@@ -287,8 +457,23 @@ function displayRooms(roomsArray) {
   document.querySelectorAll('.inquiry-btn').forEach(btn=>{
     btn.addEventListener('click',function(){
       const roomId = this.getAttribute('data-id');
-      document.getElementById('inquiryRoomId').value = roomId;
-      document.getElementById('inquiryModal').style.display = 'block';
+      const room = rooms.find(r=>r.id == roomId);
+      if(room){
+        document.getElementById('inquiryRoomId').value = roomId;
+        document.getElementById('inquiryRoomTitle').value = room.title || '';
+        // Pre-fill form if user is logged in
+        <?php if(isset($_SESSION["user_id"])): ?>
+        document.getElementById('inqName').value = '<?php echo htmlspecialchars($_SESSION["name"] ?? ""); ?>';
+        <?php endif; ?>
+        // Reset form
+        document.getElementById('inqEmail').value = '';
+        document.getElementById('inqPhone').value = '';
+        document.getElementById('inqDate').value = '';
+        document.getElementById('inqMessage').value = '';
+        document.getElementById('inquirySuccess').style.display = 'none';
+        document.getElementById('inquiryError').style.display = 'none';
+        document.getElementById('inquiryModal').style.display = 'block';
+      }
     });
   });
 
@@ -320,6 +505,123 @@ function handleSearch(e){
 // Modal Close
 document.getElementById('modalClose').onclick = ()=>{ document.getElementById('roomModal').style.display='none'; };
 document.getElementById('inquiryModalClose').onclick = ()=>{ document.getElementById('inquiryModal').style.display='none'; };
+
+// Inquiry Form Submission
+document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  const formData = new FormData(this);
+  const submitBtn = document.getElementById('inquirySubmitBtn');
+  const successDiv = document.getElementById('inquirySuccess');
+  const errorDiv = document.getElementById('inquiryError');
+  const errorMessage = document.getElementById('errorMessage');
+  
+  // Hide previous messages
+  successDiv.style.display = 'none';
+  errorDiv.style.display = 'none';
+  
+  // Disable button and show loading
+  submitBtn.disabled = true;
+  const originalHTML = submitBtn.innerHTML;
+  submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Sending...</span>';
+  submitBtn.style.opacity = '0.7';
+  
+  try {
+    const res = await fetch('api/submit-inquiry.php', {
+      method: 'POST',
+      body: formData
+    });
+    
+    // Check if response is ok
+    if (!res.ok) {
+      // Try to get error message from response
+      let errorText = '';
+      try {
+        const errorData = await res.json();
+        errorText = errorData.error || errorData.debug || '';
+      } catch (e) {
+        errorText = await res.text();
+      }
+      throw new Error(`HTTP error! status: ${res.status}. ${errorText}`);
+    }
+    
+    // Check if response is JSON
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      const text = await res.text();
+      console.error("Non-JSON response:", text);
+      throw new Error("Server returned invalid response: " + text.substring(0, 100));
+    }
+    
+    const data = await res.json();
+    
+    if (data.success) {
+      // Show success message with animation
+      successDiv.style.display = 'block';
+      const successMsg = document.getElementById('successMessage');
+      if (successMsg) {
+        successMsg.textContent = data.message || 'Your inquiry has been submitted successfully!';
+      } else {
+        successDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#28a745;margin-right:8px;"></i> <strong>Success!</strong> ' + (data.message || 'Your inquiry has been submitted successfully!');
+      }
+      successDiv.style.animation = 'slideInSuccess 0.5s ease';
+      
+      // Add success animation to button
+      submitBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+      submitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Sent Successfully!</span>';
+      
+      // Scroll to success message
+      successDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      
+      // Reset form after 2 seconds and close modal after 3 seconds
+      setTimeout(() => {
+        this.reset();
+        setTimeout(() => {
+          document.getElementById('inquiryModal').style.display = 'none';
+          // Reset button
+          submitBtn.style.background = '';
+          submitBtn.innerHTML = originalHTML;
+        }, 1000);
+      }, 2000);
+    } else {
+      // Show error message
+      errorDiv.style.display = 'block';
+      errorMessage.textContent = data.error || 'Failed to submit inquiry. Please try again.';
+      errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  } catch (error) {
+    console.error('Inquiry Error:', error);
+    errorDiv.style.display = 'block';
+    let errorMsg = 'Network error. Please check your connection and try again.';
+    
+    if (error.message.includes('HTTP error')) {
+      // Extract error details from message
+      const errorMatch = error.message.match(/error! status: \d+\. (.+)/);
+      if (errorMatch && errorMatch[1]) {
+        errorMsg = errorMatch[1];
+      } else {
+        errorMsg = 'Server error occurred. Please check if the database is set up correctly.';
+      }
+    } else if (error.message.includes('invalid response')) {
+      errorMsg = 'Server returned invalid response. Please check server configuration.';
+    } else if (error.message) {
+      errorMsg = 'Error: ' + error.message;
+    }
+    
+    errorMessage.textContent = errorMsg;
+    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    
+    // Add shake animation to error
+    errorDiv.style.animation = 'shake 0.5s ease';
+    setTimeout(() => {
+      errorDiv.style.animation = '';
+    }, 500);
+  } finally {
+    // Re-enable button
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = originalHTML;
+    submitBtn.style.opacity = '1';
+  }
+});
 
 searchForm.addEventListener('submit', handleSearch);
 window.onload = ()=>{ displayRooms(rooms); };

@@ -47,10 +47,30 @@ CREATE TABLE properties (
   location varchar(255) DEFAULT NULL,
   price decimal(10,2) DEFAULT NULL,
   type varchar(50) DEFAULT NULL,
+  train_station varchar(255) DEFAULT NULL,
+  status varchar(50) DEFAULT 'available',
   description text DEFAULT NULL,
   image_url varchar(255) DEFAULT NULL,
   created_at timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (id),
   KEY user_id (user_id),
+  KEY idx_properties_status (status),
+  KEY idx_properties_location (location),
+  KEY idx_properties_price (price),
   CONSTRAINT properties_ibfk_1 FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+-- CREATE TABLE: inquiries
+CREATE TABLE inquiries (
+  id int(11) NOT NULL AUTO_INCREMENT,
+  room_id int(11) DEFAULT NULL,
+  name varchar(100) DEFAULT NULL,
+  email varchar(100) DEFAULT NULL,
+  phone varchar(50) DEFAULT NULL,
+  visit_date date DEFAULT NULL,
+  message text DEFAULT NULL,
+  created_at timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (id),
+  KEY room_id (room_id),
+  CONSTRAINT inquiries_ibfk_1 FOREIGN KEY (room_id) REFERENCES properties (id) ON DELETE CASCADE
 );

@@ -34,7 +34,9 @@
             <div class="hidden md:flex items-center space-x-6">
                 <a href="index.php" class="text-gray-700 hover:text-primary transition-colors">Home</a>
                 <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
+                <?php endif; ?>
                 <a href="about.php" class="text-primary font-semibold transition-colors">About Us</a>
                 <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
             </div>
@@ -49,7 +51,7 @@
                 </div>
                 <?php if(isset($_SESSION["user_id"])): ?>
                     <span class="px-4 py-2 text-primary font-semibold rounded-button bg-primary/10">
-                        <?php echo htmlspecialchars($_SESSION["name"]); ?>
+                        <?php echo htmlspecialchars($_SESSION["name"] ?? "User"); ?>
                     </span>
                     <a href="user/logout.php" class="px-4 py-2 bg-secondary text-white rounded-button hover:bg-secondary/90 transition-colors whitespace-nowrap">Logout</a>
                 <?php else: ?>
@@ -135,7 +137,9 @@
             <p class="text-white/80 max-w-2xl mx-auto mb-8">Join thousands of satisfied users who have found their ideal living situation through RoomFinder.</p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <a href="find-rooms.php" class="px-6 py-3 bg-white text-primary rounded-button hover:bg-gray-100 transition-colors whitespace-nowrap">Find a Room</a>
+                <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php" class="px-6 py-3 border border-white text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">List Your Property</a>
+                <?php endif; ?>
             </div>
         </div>
     </section>
@@ -167,7 +171,9 @@
                     <ul class="space-y-2">
                         <li><a href="index.php" class="text-gray-400 hover:text-white transition-colors">Home</a></li>
                         <li><a href="find-rooms.php" class="text-gray-400 hover:text-white transition-colors">Find Rooms</a></li>
+                        <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                         <li><a href="list-property.php" class="text-gray-400 hover:text-white transition-colors">List Property</a></li>
+                        <?php endif; ?>
                         <li><a href="#" class="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
                         <li><a href="about.php" class="text-gray-400 hover:text-white transition-colors">About Us</a></li>
                         <li><a href="contact.php" class="text-gray-400 hover:text-white transition-colors">Contact</a></li>
