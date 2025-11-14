@@ -43,19 +43,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <title>Login</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .error {
+            background-color: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #fcc;
+        }
+        .success {
+            background-color: #efe;
+            color: #3c3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #cfc;
+        }
+    </style>
 </head>
-<body class="bg-gray-50 font-sans">
-<div class="form-container bg-white p-8 rounded-2xl shadow-lg max-w-lg mx-auto mt-16 border-2 border-gradient-to-r from-green-400 to-blue-500">
-    <h2 class="text-3xl text-center text-green-500 mb-6 font-bold">Login to Your Account</h2>
+<body class="bg-white font-sans min-h-screen flex items-center justify-center">
+<div class="form-container bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full mx-4 border border-gray-200">
+    <h2 class="text-3xl text-center mb-6 font-bold" style="font-family:'Pacifico',cursive;color:#4A90E2;">Login to Your Account</h2>
     <?php echo $message; ?>
     <form method="POST" class="space-y-4">
-        <input type="email" name="email" placeholder="Email" class="w-full p-3 border border-green-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400" required>
-        <input type="password" name="password" placeholder="Password" class="w-full p-3 border border-green-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-400" required>
+        <input type="email" name="email" placeholder="Email" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 outline-none" required>
+        <input type="password" name="password" placeholder="Password" class="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 outline-none" required>
 
-        <button type="submit" class="w-full p-3 bg-green-400 text-white rounded-lg font-bold hover:bg-green-500 transition-colors">Login</button>
+        <button type="submit" class="w-full p-3 bg-blue-500 text-white rounded-lg font-bold hover:bg-blue-600 transition-colors">Login</button>
     </form>
-    <a class="block text-center mt-4 text-green-500 hover:underline" href="createaccount.php">Don't have an account? Sign Up</a>
+    <a class="block text-center mt-4 text-blue-500 hover:text-blue-600 hover:underline" href="createaccount.php">Don't have an account? Sign Up</a>
 </div>
 </body>
 </html>

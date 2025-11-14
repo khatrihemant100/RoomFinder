@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7.2.3/css/flag-icons.min.css">
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script>
         tailwind.config = {
@@ -207,22 +208,45 @@
         <div class="container mx-auto px-4 py-3 flex items-center justify-between">
             <a href="index.php" class="text-2xl font-['Pacifico'] text-primary">RoomFinder</a>
             <div class="hidden md:flex items-center space-x-6">
-                <a href="index.php" class="text-gray-700 hover:text-primary transition-colors">Home</a>
-                <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors">Find Rooms</a>
+                <a href="index.php" class="text-gray-700 hover:text-primary transition-colors" data-i18n="home">Home</a>
+                <a href="find-rooms.php" class="text-gray-700 hover:text-primary transition-colors" data-i18n="find_rooms">Find Rooms</a>
                 <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
-                <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
+                <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors" data-i18n="list_property">List Property</a>
                 <?php endif; ?>
-                <a href="about.php" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
-                <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
+                <a href="about.php" class="text-gray-700 hover:text-primary transition-colors" data-i18n="about_us">About Us</a>
+                <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors" data-i18n="contact">Contact</a>
             </div>
             <div class="flex items-center space-x-4">
-                <div class="hidden md:flex items-center space-x-2">
-                    <button class="flex items-center space-x-1 text-gray-700 hover:text-primary">
+                <!-- Language Selector -->
+                <div class="lang-selector relative hidden md:block">
+                    <button onclick="toggleLangDropdown(this)" class="current-lang flex items-center space-x-2 px-3 py-2 text-gray-700 hover:text-primary transition-colors rounded-lg hover:bg-gray-50">
+                        <span class="fi fi-gb fis" style="font-size: 1.2rem;"></span>
                         <span>EN</span>
-                        <div class="w-4 h-4 flex items-center justify-center">
-                            <i class="ri-arrow-down-s-line"></i>
-                        </div>
+                        <i class="ri-arrow-down-s-line text-sm"></i>
                     </button>
+                    <div class="lang-dropdown hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                        <button onclick="setLanguage('en')" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-3 transition-colors">
+                            <span class="fi fi-gb fis" style="font-size: 1.2rem;"></span>
+                            <div>
+                                <div class="font-medium">English</div>
+                                <div class="text-xs text-gray-500">EN</div>
+                            </div>
+                        </button>
+                        <button onclick="setLanguage('ja')" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-3 transition-colors">
+                            <span class="fi fi-jp fis" style="font-size: 1.2rem;"></span>
+                            <div>
+                                <div class="font-medium">日本語</div>
+                                <div class="text-xs text-gray-500">JA</div>
+                            </div>
+                        </button>
+                        <button onclick="setLanguage('ne')" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-3 transition-colors">
+                            <span class="fi fi-np fis" style="font-size: 1.2rem;"></span>
+                            <div>
+                                <div class="font-medium">नेपाली</div>
+                                <div class="text-xs text-gray-500">NE</div>
+                            </div>
+                        </button>
+                    </div>
                 </div>
                 <?php if(isset($_SESSION["user_id"])): ?>
                     <span class="px-4 py-2 text-primary font-semibold rounded-button bg-primary/10">
@@ -248,10 +272,10 @@
                         }
                         ?>
                     </span>
-                    <a href="user/logout.php" class="px-4 py-2 bg-secondary text-white rounded-button hover:bg-secondary/90 transition-colors whitespace-nowrap">Logout</a>
+                    <a href="user/logout.php" class="px-4 py-2 bg-secondary text-white rounded-button hover:bg-secondary/90 transition-colors whitespace-nowrap" data-i18n="logout">Logout</a>
                 <?php else: ?>
-                    <a href="user/login.php" class="hidden md:block px-4 py-2 text-primary border border-primary rounded-button hover:bg-primary hover:text-white transition-colors whitespace-nowrap">Sign In</a>
-                    <a href="user/createaccount.php" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Sign Up</a>
+                    <a href="user/login.php" class="hidden md:block px-4 py-2 text-primary border border-primary rounded-button hover:bg-primary hover:text-white transition-colors whitespace-nowrap" data-i18n="sign_in">Sign In</a>
+                    <a href="user/createaccount.php" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap" data-i18n="sign_up">Sign Up</a>
                 <?php endif; ?>
                 <button class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700">
                     <i class="ri-menu-line text-xl"></i>
@@ -264,13 +288,16 @@
     <section class="hero-section w-full py-16 md:py-24">
         <div class="container mx-auto px-4">
             <div class="w-full max-w-xl">
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Find Your Perfect Room</h1>
-                <p class="text-lg text-gray-700 mb-8">Discover thousands of rooms and apartments for rent. Whether you're looking to list your property or find your next home, we've got you covered.</p>
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4" data-i18n="find_perfect_room">Find Your Perfect Room</h1>
+                <p class="text-lg text-gray-700 mb-8" data-i18n="discover">Discover thousands of rooms and apartments for rent. Whether you're looking to list your property or find your next home, we've got you covered.</p>
                 
                 <div class="flex flex-col md:flex-row gap-4 mb-8">
-                    <a href="find-rooms.php" class="px-6 py-3 bg-primary text-white rounded-button text-center hover:bg-primary/90 transition-colors whitespace-nowrap">Find a Room</a>
+                    <a href="find-rooms.php" class="px-6 py-3 bg-primary text-white rounded-button text-center hover:bg-primary/90 transition-colors whitespace-nowrap" data-i18n="find_room_btn">Find a Room</a>
+                    
                     <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
-                    <a href="list-property.php" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap">List Your Property</a>
+                        <a href="list-property.php" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap" data-i18n="list_property_btn">List Your Property</a>
+                    <?php else: ?>
+                        <button onclick="showRegisterNotification()" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap" data-i18n="register_owner">Register as Room Owner</button>
                     <?php endif; ?>
                 </div>
                 
@@ -296,6 +323,20 @@
                     <div id="modal-results"></div>
                   </div>
                 </div>
+                
+                <!-- Notification Modal for Register as Room Owner -->
+                <div id="register-notification-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
+                  <div style="background:#fff;max-width:500px;width:95vw;padding:32px 24px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.25);position:relative;text-align:center;">
+                    <button id="close-register-modal" style="position:absolute;top:12px;right:16px;font-size:1.8rem;background:none;border:none;cursor:pointer;color:#666;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background 0.2s;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">&times;</button>
+                    <div style="font-size:3rem;margin-bottom:16px;">🔔</div>
+                    <h3 style="font-size:1.5rem;font-weight:bold;margin-bottom:12px;color:#333;">Account Required</h3>
+                    <p style="color:#666;margin-bottom:24px;line-height:1.6;">To register as a Room Owner, you need to create an account first. Please create your account to get started with listing your properties.</p>
+                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                      <a href="user/createaccount.php?role=owner" class="px-6 py-3 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap" style="text-decoration:none;display:inline-block;">Create Account</a>
+                      <button onclick="closeRegisterNotification()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition-colors whitespace-nowrap">Cancel</button>
+                    </div>
+                  </div>
+                </div>
             </div>
         </div>
     </section>
@@ -304,15 +345,15 @@
     <section class="py-16 bg-white">
         <div class="container mx-auto px-4">
             <div class="text-center mb-12">
-                <h2 class="text-3xl font-bold mb-4">Choose Your Role</h2>
-                <p class="text-gray-600 max-w-2xl mx-auto">Whether you're looking to rent out your property or find your next home, RoomFinder has the tools you need.</p>
+                <h2 class="text-3xl font-bold mb-4" data-i18n="choose_role">Choose Your Role</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-i18n="role_desc">Whether you're looking to rent out your property or find your next home, RoomFinder has the tools you need.</p>
             </div>
             
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:transform hover:scale-105">
                     <div class="h-48 bg-gray-200" style="background-image: url('https://readdy.ai/api/search-image?query=A%20person%20holding%20keys%20to%20a%20new%20apartment%2C%20standing%20in%20a%20doorway%20with%20a%20welcoming%20smile.%20The%20scene%20shows%20a%20well-maintained%20property%20with%20good%20lighting%2C%20clean%20interiors%2C%20and%20a%20sense%20of%20ownership%20and%20pride.%20The%20image%20conveys%20the%20concept%20of%20property%20management%20and%20renting%20out%20spaces.&width=600&height=400&seq=2&orientation=landscape'); background-size: cover; background-position: center;"></div>
                     <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2"><a href="/RoomFinder/index.php">Room Owner</h3></a>
+                        <h3 class="text-xl font-bold mb-2">Room Owner</h3>
                         <p class="text-gray-600 mb-4">List your property, manage bookings, and connect with potential tenants. Our platform makes property management simple and efficient.</p>
                         <ul class="mb-6 space-y-2">
                             <li class="flex items-start">
@@ -336,6 +377,8 @@
                         </ul>
                         <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                         <a href="list-property.php" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">List Your Property</a>
+                        <?php else: ?>
+                        <button onclick="showRegisterNotification()" class="block w-full px-4 py-3 bg-primary text-white text-center rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Register as Room Owner</button>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -629,6 +672,7 @@
     </footer>
 
 <!-- नेपाली नोट: बाह्य JavaScript फाइल लिंक (main.js) -->
+    <script src="lang.js"></script>
     <script src="main.js"></script>
 
 <script>
@@ -673,6 +717,22 @@ document.getElementById('close-modal').onclick = function() {
 };
 document.getElementById('search-modal').onclick = function(e) {
   if (e.target === this) this.style.display = 'none';
+};
+
+// Register as Room Owner notification functions
+function showRegisterNotification() {
+  const modal = document.getElementById('register-notification-modal');
+  modal.style.display = 'flex';
+}
+
+function closeRegisterNotification() {
+  const modal = document.getElementById('register-notification-modal');
+  modal.style.display = 'none';
+}
+
+document.getElementById('close-register-modal').onclick = closeRegisterNotification;
+document.getElementById('register-notification-modal').onclick = function(e) {
+  if (e.target === this) closeRegisterNotification();
 };
 
 // RoomFinder AI Chat - Using server-side API (secure)

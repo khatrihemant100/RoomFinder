@@ -104,11 +104,19 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 }
 
 #inquiryModal .modal-content {
-  background: linear-gradient(135deg, #4A90E2 0%, #43c6ac 100%);
-  color: #fff;
-  border: 2px solid #fff;
+  background: #fff;
+  color: #333;
+  border: 1.5px solid #e5e7eb;
   animation: slideDown 0.4s ease;
-  box-shadow: 0 20px 60px rgba(74, 144, 226, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(74, 144, 226, 0.10);
+  max-height: 95vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  width: 90%;
+  max-width: 900px;
+  border-radius: 18px;
 }
 
 @keyframes slideDown {
@@ -135,35 +143,32 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 
 #inquiryModal h3 {
   text-align: center;
-  font-size: 1.8rem;
+  font-size: 2rem;
   margin-bottom: 10px;
-  font-family: 'Inter', sans-serif;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  font-family: 'Pacifico', cursive;
+  color: #4A90E2;
   animation: fadeIn 0.6s ease;
 }
 
 #inquiryModal input,
 #inquiryModal textarea {
-  background: rgba(255,255,255,0.95);
-  border: 2px solid rgba(255,255,255,0.3);
+  background: #f9f9f9;
+  border: 1.5px solid #4A90E2;
   color: #333;
-  transition: all 0.3s ease;
+  transition: border 0.2s;
   border-radius: 8px;
 }
 
 #inquiryModal input:focus,
 #inquiryModal textarea:focus {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
   outline: none;
-  border-color: #4A90E2;
+  border-color: #FF6B6B;
   background: #fff;
 }
 
 #inquiryModal input:hover,
 #inquiryModal textarea:hover {
-  border-color: rgba(255,255,255,0.5);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-color: #4A90E2;
 }
 
 #inquiryModal label {
@@ -175,41 +180,18 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 }
 
 #inquiryModal button[type="submit"] {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-  font-weight: 600;
-  font-size: 1rem;
-  box-shadow: 0 8px 20px rgba(17, 153, 142, 0.4);
-  transition: all 0.3s ease;
+  background: #4A90E2;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  transition: background 0.3s;
   border: none;
-  position: relative;
-  overflow: hidden;
-}
-
-#inquiryModal button[type="submit"]:before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.6s, height 0.6s;
-}
-
-#inquiryModal button[type="submit"]:hover:before {
-  width: 300px;
-  height: 300px;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 #inquiryModal button[type="submit"]:hover {
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(17, 153, 142, 0.5);
-}
-
-#inquiryModal button[type="submit"]:active {
-  transform: translateY(-1px) scale(0.98);
+  background: #357ABD;
 }
 
 #inquiryModal button[type="submit"]:disabled {
@@ -243,9 +225,24 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 
 .close-btn:hover {
   transform: rotate(90deg) scale(1.2);
-  color: #fff;
+  color: #333;
 }
 
+/* Responsive design for inquiry form */
+@media (max-width: 768px) {
+  #inquiryModal .modal-content {
+    width: 95%;
+    max-width: 100%;
+  }
+  
+  #inquiryForm > div[style*="display:grid"] {
+    display: block !important;
+  }
+  
+  #inquiryForm > div[style*="display:grid"] > div {
+    margin-bottom: 18px;
+  }
+}
 
 </style>
 </head>
@@ -305,76 +302,84 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 <!-- Inquiry Modal -->
 <div id="inquiryModal" class="modal">
   <div class="modal-content">
-    <span id="inquiryModalClose" class="close-btn">&times;</span>
-    <h3 style="color:#fff;text-shadow:2px 2px 4px rgba(0,0,0,0.2);">📧 Room Inquiry Form</h3>
-    <p style="text-align:center;color:rgba(255,255,255,0.95);margin-bottom:25px;font-size:0.95rem;background:rgba(255,255,255,0.1);padding:10px;border-radius:6px;">Fill out the form below to contact the property owner</p>
-    <form id="inquiryForm">
+    <div style="position:sticky;top:0;background:#fff;z-index:10;padding:30px 30px 20px 30px;border-bottom:1.5px solid #e5e7eb;">
+      <span id="inquiryModalClose" class="close-btn" style="color:#aaa;">&times;</span>
+      <h3 style="color:#4A90E2;font-family:'Pacifico',cursive;">📧 Room Inquiry Form</h3>
+      <p style="text-align:center;color:#555;margin-top:10px;font-size:0.95rem;">Fill out the form below to contact the property owner</p>
+    </div>
+    <form id="inquiryForm" style="flex:1;padding:20px 30px 30px 30px;">
       <input type="hidden" id="inquiryRoomId" name="room_id" />
       <input type="hidden" id="inquiryRoomTitle" name="room_title" />
       
-      <div style="margin-bottom:18px;">
-        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
-          <i class="fas fa-user" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Your Name *
-        </label>
-        <input type="text" id="inqName" name="name" required 
-               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
-               placeholder="Enter your full name" />
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;">
+        <div>
+          <label style="display:block;margin-bottom:8px;font-weight:600;color:#333;font-size:0.95rem;">
+            <i class="fas fa-user" style="color:#4A90E2;margin-right:8px;"></i> Your Name *
+          </label>
+          <input type="text" id="inqName" name="name" required 
+                 style="width:100%;padding:12px;border-radius:8px;border:1.5px solid #4A90E2;background:#f9f9f9;color:#333;font-size:1rem;box-sizing:border-box;margin-bottom:0;" 
+                 placeholder="Enter your full name" />
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:8px;font-weight:600;color:#333;font-size:0.95rem;">
+            <i class="fas fa-envelope" style="color:#4A90E2;margin-right:8px;"></i> Email Address *
+          </label>
+          <input type="email" id="inqEmail" name="email" required 
+                 style="width:100%;padding:12px;border-radius:8px;border:1.5px solid #4A90E2;background:#f9f9f9;color:#333;font-size:1rem;box-sizing:border-box;margin-bottom:0;" 
+                 placeholder="your.email@example.com" />
+        </div>
+      </div>
+      
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:18px;">
+        <div>
+          <label style="display:block;margin-bottom:8px;font-weight:600;color:#333;font-size:0.95rem;">
+            <i class="fas fa-phone" style="color:#4A90E2;margin-right:8px;"></i> Phone Number *
+          </label>
+          <input type="tel" id="inqPhone" name="phone" required 
+                 style="width:100%;padding:12px;border-radius:8px;border:1.5px solid #4A90E2;background:#f9f9f9;color:#333;font-size:1rem;box-sizing:border-box;margin-bottom:0;" 
+                 placeholder="+81-XX-XXXX-XXXX" />
+        </div>
+        
+        <div>
+          <label style="display:block;margin-bottom:8px;font-weight:600;color:#333;font-size:0.95rem;">
+            <i class="fas fa-calendar-alt" style="color:#4A90E2;margin-right:8px;"></i> Preferred Visit Date *
+          </label>
+          <input type="date" id="inqDate" name="visit_date" required 
+                 style="width:100%;padding:12px;border-radius:8px;border:1.5px solid #4A90E2;background:#f9f9f9;color:#333;font-size:1rem;box-sizing:border-box;margin-bottom:0;" 
+                 min="<?php echo date('Y-m-d'); ?>" />
+          <small style="color:#666;font-size:0.85rem;display:block;margin-top:5px;">Select your preferred date</small>
+        </div>
       </div>
       
       <div style="margin-bottom:18px;">
-        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
-          <i class="fas fa-envelope" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Email Address *
+        <label style="display:block;margin-bottom:8px;font-weight:600;color:#333;font-size:0.95rem;">
+          <i class="fas fa-comment-alt" style="color:#4A90E2;margin-right:8px;"></i> Additional Message
         </label>
-        <input type="email" id="inqEmail" name="email" required 
-               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
-               placeholder="your.email@example.com" />
-      </div>
-      
-      <div style="margin-bottom:18px;">
-        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
-          <i class="fas fa-phone" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Phone Number *
-        </label>
-        <input type="tel" id="inqPhone" name="phone" required 
-               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
-               placeholder="+81-XX-XXXX-XXXX" />
-      </div>
-      
-      <div style="margin-bottom:18px;">
-        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
-          <i class="fas fa-calendar-alt" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Preferred Visit Date *
-        </label>
-        <input type="date" id="inqDate" name="visit_date" required 
-               style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;" 
-               min="<?php echo date('Y-m-d'); ?>" />
-        <small style="color:rgba(255,255,255,0.9);font-size:0.85rem;display:block;margin-top:5px;">Select your preferred date for property viewing</small>
-      </div>
-      
-      <div style="margin-bottom:20px;">
-        <label style="display:block;margin-bottom:8px;font-weight:600;color:#fff;font-size:0.95rem;">
-          <i class="fas fa-comment-alt" style="color:#fff;margin-right:8px;background:rgba(255,255,255,0.2);padding:6px 8px;border-radius:6px;"></i> Additional Message
-        </label>
-        <textarea id="inqMessage" name="message" rows="4" 
-                  style="width:100%;padding:12px 15px;border-radius:8px;border:2px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.95);color:#333;font-size:1rem;resize:vertical;" 
+        <textarea id="inqMessage" name="message" rows="5" 
+                  style="width:100%;padding:12px;border-radius:8px;border:1.5px solid #4A90E2;background:#f9f9f9;color:#333;font-size:1rem;resize:vertical;box-sizing:border-box;margin-bottom:0;" 
                   placeholder="Tell the owner about your interest, questions, or special requirements..."></textarea>
-        <small style="color:rgba(255,255,255,0.9);font-size:0.85rem;display:block;margin-top:5px;">Optional: Add any additional information or questions</small>
+        <small style="color:#666;font-size:0.85rem;display:block;margin-top:5px;">Optional: Add any additional information or questions</small>
       </div>
       
-      <div id="inquirySuccess" style="display:none;background:rgba(255,255,255,0.95);color:#155724;padding:15px;border-radius:8px;margin-bottom:15px;border:2px solid #28a745;box-shadow:0 4px 12px rgba(40,167,69,0.3);">
-        <i class="fas fa-check-circle" style="color:#28a745;margin-right:8px;"></i> <strong>Success!</strong> <span id="successMessage">Your inquiry has been submitted.</span>
+      <div id="inquirySuccess" style="display:none;color:#4f8a10;background:#dff2bf;padding:10px;border-radius:6px;margin-bottom:12px;text-align:center;">
+        <i class="fas fa-check-circle" style="color:#4f8a10;margin-right:8px;"></i> <strong>Success!</strong> <span id="successMessage">Your inquiry has been submitted.</span>
       </div>
       
-      <div id="inquiryError" style="display:none;background:rgba(255,255,255,0.95);color:#721c24;padding:15px;border-radius:8px;margin-bottom:15px;border:2px solid #dc3545;box-shadow:0 4px 12px rgba(220,53,69,0.3);">
-        <i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:8px;"></i> <strong>Error:</strong> <span id="errorMessage"></span>
+      <div id="inquiryError" style="display:none;color:#d8000c;background:#ffd2d2;padding:10px;border-radius:6px;margin-bottom:12px;text-align:center;">
+        <i class="fas fa-exclamation-circle" style="color:#d8000c;margin-right:8px;"></i> <strong>Error:</strong> <span id="errorMessage"></span>
       </div>
       
       <button type="submit" id="inquirySubmitBtn" 
-              class="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all duration-200 flex items-center justify-center gap-2">
-        <i class="fas fa-paper-plane"></i>
-        <span>Send Inquiry</span>
+              style="width:100%;padding:12px;background:#4A90E2;color:#fff;border:none;border-radius:8px;font-size:1.1rem;cursor:pointer;transition:background 0.3s, transform 0.2s;font-weight:bold;margin-top:10px;"
+              onmouseover="this.style.transform='scale(1.05)';this.style.boxShadow='0 6px 22px 0 rgba(74,144,226,0.10)';"
+              onmouseout="this.style.transform='';this.style.boxShadow='';"
+      >
+        <i class="fas fa-paper-plane"></i> Send Inquiry
       </button>
       
-      <p style="text-align:center;margin-top:15px;color:rgba(255,255,255,0.95);font-size:0.9rem;background:rgba(255,255,255,0.1);padding:10px;border-radius:6px;">
-        <i class="fas fa-info-circle" style="margin-right:5px;"></i> The property owner will receive your inquiry via email
+      <p style="text-align:center;margin-top:15px;color:#555;font-size:0.9rem;">
+        <i class="fas fa-info-circle" style="margin-right:5px;color:#4A90E2;"></i> The property owner will receive your inquiry via email
       </p>
     </form>
   </div>
@@ -561,12 +566,12 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
       if (successMsg) {
         successMsg.textContent = data.message || 'Your inquiry has been submitted successfully!';
       } else {
-        successDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#28a745;margin-right:8px;"></i> <strong>Success!</strong> ' + (data.message || 'Your inquiry has been submitted successfully!');
+        successDiv.innerHTML = '<i class="fas fa-check-circle" style="color:#4f8a10;margin-right:8px;"></i> <strong>Success!</strong> ' + (data.message || 'Your inquiry has been submitted successfully!');
       }
       successDiv.style.animation = 'slideInSuccess 0.5s ease';
       
       // Add success animation to button
-      submitBtn.style.background = 'linear-gradient(135deg, #11998e 0%, #38ef7d 100%)';
+      submitBtn.style.background = '#4f8a10';
       submitBtn.innerHTML = '<i class="fas fa-check"></i> <span>Sent Successfully!</span>';
       
       // Scroll to success message
