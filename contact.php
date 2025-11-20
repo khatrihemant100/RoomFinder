@@ -131,15 +131,63 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php" class="text-gray-700 hover:text-primary transition-colors">List Property</a>
                 <?php endif; ?>
-                <a href="about.html" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
-                <a href="contact.php" class="text-gray-700 hover:text-primary transition-colors">Contact</a>
+                <a href="about.php" class="text-gray-700 hover:text-primary transition-colors">About Us</a>
+                <a href="contact.php" class="text-primary font-semibold transition-colors">Contact</a>
+                <?php if(isset($_SESSION["user_id"])): ?>
+                <a href="messages.php" class="text-gray-700 hover:text-primary transition-colors relative">
+                    Messages
+                    <?php
+                    require_once 'db.php';
+                    $unreadStmt = $conn->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND is_read = 0");
+                    $unreadStmt->bind_param("i", $_SESSION["user_id"]);
+                    $unreadStmt->execute();
+                    $unreadStmt->bind_result($unread_count);
+                    $unreadStmt->fetch();
+                    $unreadStmt->close();
+                    if ($unread_count > 0) {
+                        echo '<span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">' . $unread_count . '</span>';
+                    }
+                    ?>
+                </a>
+                <?php endif; ?>
             </div>
             <div class="flex items-center space-x-4">
                 <?php if(isset($_SESSION["user_id"])): ?>
-                    <span class="px-4 py-2 text-primary font-semibold rounded-button bg-primary/10">
-                        <?php echo htmlspecialchars($_SESSION["name"] ?? "User"); ?>
-                    </span>
-                    <a href="user/logout.php" class="px-4 py-2 bg-secondary text-white rounded-button hover:bg-secondary/90 transition-colors whitespace-nowrap">Logout</a>
+                    <?php
+                    $user_name = $_SESSION["name"] ?? "User";
+                    $user_photo = $_SESSION["profile_photo"] ?? null;
+                    $user_initial = strtoupper(substr($user_name, 0, 1));
+                    ?>
+                    <!-- User Profile Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleUserDropdown()" class="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors">
+                            <div class="w-10 h-10 rounded-full <?php echo $user_photo ? '' : 'bg-green-500'; ?> flex items-center justify-center overflow-hidden">
+                                <?php if ($user_photo): ?>
+                                    <img src="uploads/<?php echo htmlspecialchars($user_photo); ?>" alt="<?php echo htmlspecialchars($user_name); ?>" class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <span class="text-white font-bold text-lg"><?php echo $user_initial; ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <span class="hidden md:block text-gray-700 font-semibold"><?php echo htmlspecialchars(strtoupper($user_name)); ?></span>
+                            <i class="ri-arrow-down-s-line text-gray-600"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                            <a href="index.php" class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 transition-colors">
+                                <i class="ri-dashboard-line text-gray-600"></i>
+                                <span class="text-gray-700">Dashboard</span>
+                            </a>
+                            <a href="user/profile.php" class="flex items-center space-x-3 px-4 py-2 hover:bg-gray-100 transition-colors">
+                                <i class="ri-user-line text-gray-600"></i>
+                                <span class="text-gray-700">Profile</span>
+                            </a>
+                            <hr class="my-2 border-gray-200">
+                            <a href="user/logout.php" class="flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors">
+                                <i class="ri-logout-box-r-line text-red-500"></i>
+                                <span class="text-red-500">Logout</span>
+                            </a>
+                        </div>
+                    </div>
                 <?php else: ?>
                     <a href="user/login.php" class="hidden md:block px-4 py-2 text-primary border border-primary rounded-button hover:bg-primary hover:text-white transition-colors whitespace-nowrap">Sign In</a>
                     <a href="user/createaccount.php" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Sign Up</a>
@@ -171,5 +219,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <p><strong>Address:</strong> Yokohama, Japan</p>
         </div>
     </div>
+    <script>
+        // Toggle user dropdown menu
+        function toggleUserDropdown() {
+            const dropdown = document.getElementById('userDropdown');
+            dropdown.classList.toggle('hidden');
+        }
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('userDropdown');
+            const button = event.target.closest('[onclick="toggleUserDropdown()"]');
+            if (dropdown && !dropdown.contains(event.target) && !button) {
+                dropdown.classList.add('hidden');
+            }
+        });
+    </script>
 </body>
 </html>

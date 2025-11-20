@@ -290,14 +290,60 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                 <a href="list-property.php">List Property</a>
                 <?php endif; ?>
-                <a href="about.html">About Us</a>
+                <a href="about.php">About Us</a>
                 <a href="contact.php">Contact</a>
-            </nav>
-            <div class="user-area">
                 <?php if(isset($_SESSION["user_id"])): ?>
-                    <span><?php echo htmlspecialchars($_SESSION["name"] ?? "User"); ?></span>
-                    <a href="user/logout.php">Logout</a>
-                <?php else: ?>
+                <a href="messages.php" style="position:relative;">
+                    Messages
+                    <?php
+                    require_once 'db.php';
+                    $unreadStmt = $conn->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND is_read = 0");
+                    $unreadStmt->bind_param("i", $_SESSION["user_id"]);
+                    $unreadStmt->execute();
+                    $unreadStmt->bind_result($unread_count);
+                    $unreadStmt->fetch();
+                    $unreadStmt->close();
+                    if ($unread_count > 0) {
+                        echo '<span style="position:absolute;top:-5px;right:-5px;background:#FF6B6B;color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;">' . $unread_count . '</span>';
+                    }
+                    ?>
+                </a>
+                <?php endif; ?>
+            </nav>
+  <div class="user-area" style="position:relative;">
+    <?php if(isset($_SESSION["user_id"])): ?>
+      <?php
+      $user_name = $_SESSION["name"] ?? "User";
+      $user_photo = $_SESSION["profile_photo"] ?? null;
+      $user_initial = strtoupper(substr($user_name, 0, 1));
+      ?>
+      <button onclick="toggleUserDropdown()" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border:none;background:transparent;cursor:pointer;border-radius:8px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+        <div style="width:40px;height:40px;border-radius:50%;<?php echo $user_photo ? '' : 'background:#10b981;'; ?>display:flex;align-items:center;justify-content:center;overflow:hidden;">
+          <?php if ($user_photo): ?>
+            <img src="uploads/<?php echo htmlspecialchars($user_photo); ?>" alt="<?php echo htmlspecialchars($user_name); ?>" style="width:100%;height:100%;object-fit:cover;">
+          <?php else: ?>
+            <span style="color:white;font-weight:bold;font-size:18px;"><?php echo $user_initial; ?></span>
+          <?php endif; ?>
+        </div>
+        <span style="font-weight:600;color:#374151;"><?php echo htmlspecialchars(strtoupper($user_name)); ?></span>
+        <i class="ri-arrow-down-s-line" style="color:#6b7280;"></i>
+      </button>
+      <div id="userDropdown" style="display:none;position:absolute;right:0;top:100%;margin-top:8px;width:192px;background:white;border-radius:8px;box-shadow:0 4px 6px rgba(0,0,0,0.1);border:1px solid #e5e7eb;padding:8px 0;z-index:50;">
+        <a href="index.php" style="display:flex;align-items:center;gap:12px;padding:8px 16px;color:#374151;text-decoration:none;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+          <i class="ri-dashboard-line" style="color:#6b7280;"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="user/profile.php" style="display:flex;align-items:center;gap:12px;padding:8px 16px;color:#374151;text-decoration:none;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+          <i class="ri-user-line" style="color:#6b7280;"></i>
+          <span>Profile</span>
+        </a>
+        <hr style="margin:8px 0;border:none;border-top:1px solid #e5e7eb;">
+        <a href="user/logout.php" style="display:flex;align-items:center;gap:12px;padding:8px 16px;color:#ef4444;text-decoration:none;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
+          <i class="ri-logout-box-r-line" style="color:#ef4444;"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    <?php else: ?>
                     <a href="user/login.php" style="background:#4A90E2;">Sign In</a>
                     <a href="user/createaccount.php">Sign Up</a>
                 <?php endif; ?>
@@ -396,7 +442,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             el.addEventListener('blur', function() {
                 this.parentElement.style.boxShadow = '';
             });
-        });
-    </script>
+  });
+  
+  // Toggle user dropdown menu
+  function toggleUserDropdown() {
+    const dropdown = document.getElementById('userDropdown');
+    if (dropdown) {
+      dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+    }
+  }
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('userDropdown');
+    const button = event.target.closest('[onclick="toggleUserDropdown()"]');
+    if (dropdown && !dropdown.contains(event.target) && !button) {
+      dropdown.style.display = 'none';
+    }
+  });
+</script>
 </body>
 </html>
