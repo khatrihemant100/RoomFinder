@@ -13,7 +13,7 @@ CREATE TABLE users (
   profile_photo varchar(255) DEFAULT NULL,
   is_admin tinyint(1) DEFAULT '0',
   role enum('owner','seeker') DEFAULT 'seeker',
-  is_verified TINYINT(1) DEFAULT 0;
+  is_verified TINYINT(1) DEFAULT 0,
   PRIMARY KEY (id),
   UNIQUE KEY email (email),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
