@@ -12,3 +12,5 @@ ADD COLUMN created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER role;
 -- Update existing records to have current timestamp if they don't have one
 UPDATE users SET created_at = NOW() WHERE created_at IS NULL;
 
+
+
