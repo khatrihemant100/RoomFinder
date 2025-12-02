@@ -229,7 +229,7 @@
                         $unreadStmt->fetch();
                         $unreadStmt->close();
                         if ($unread_count > 0) {
-                            echo '<span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">' . $unread_count . '</span>';
+                            echo '<span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold" style="min-width: 20px; min-height: 20px; line-height: 20px; transform: translate(50%, -50%);">' . $unread_count . '</span>';
                         }
                     }
                     ?>
@@ -270,26 +270,45 @@
                 </div>
                 <?php if(isset($_SESSION["user_id"])): ?>
                     <?php
-                    // Get user name and profile photo
+                    // Get user name, profile photo, and admin status
                     $user_name = $_SESSION["name"] ?? "User";
                     $user_photo = $_SESSION["profile_photo"] ?? null;
                     $user_initial = strtoupper(substr($user_name, 0, 1));
+                    $is_admin = false;
                     
                     // If name is not set or empty, try to get from database
                     if (empty($user_name) || $user_name === "User") {
                         require_once 'db.php';
-                        $stmt = $conn->prepare("SELECT name, profile_photo FROM users WHERE id = ?");
+                        $stmt = $conn->prepare("SELECT name, profile_photo, is_admin FROM users WHERE id = ?");
                         $stmt->bind_param("i", $_SESSION["user_id"]);
                         $stmt->execute();
-                        $stmt->bind_result($dbName, $dbPhoto);
+                        $stmt->bind_result($dbName, $dbPhoto, $dbIsAdmin);
                         if ($stmt->fetch() && !empty(trim($dbName))) {
                             $_SESSION["name"] = trim($dbName);
                             $_SESSION["profile_photo"] = $dbPhoto;
+                            $_SESSION["is_admin"] = $dbIsAdmin ?? 0;
                             $user_name = trim($dbName);
                             $user_photo = $dbPhoto;
+                            $is_admin = ($dbIsAdmin ?? 0) == 1;
                             $user_initial = strtoupper(substr($user_name, 0, 1));
                         }
                         $stmt->close();
+                    } else {
+                        // Check admin status from session or database
+                        if (isset($_SESSION["is_admin"])) {
+                            $is_admin = $_SESSION["is_admin"] == 1;
+                        } else {
+                            require_once 'db.php';
+                            $stmt = $conn->prepare("SELECT is_admin FROM users WHERE id = ?");
+                            $stmt->bind_param("i", $_SESSION["user_id"]);
+                            $stmt->execute();
+                            $stmt->bind_result($dbIsAdmin);
+                            if ($stmt->fetch()) {
+                                $_SESSION["is_admin"] = $dbIsAdmin ?? 0;
+                                $is_admin = ($dbIsAdmin ?? 0) == 1;
+                            }
+                            $stmt->close();
+                        }
                     }
                     ?>
                     <!-- User Profile Dropdown -->
@@ -315,6 +334,13 @@
                                 <i class="ri-user-line text-gray-600"></i>
                                 <span class="text-gray-700">Profile</span>
                             </a>
+                            <?php if ($is_admin): ?>
+                            <hr class="my-2 border-gray-200">
+                            <a href="admin/login.php" class="flex items-center space-x-3 px-4 py-2 hover:bg-blue-50 transition-colors">
+                                <i class="ri-admin-line text-blue-500"></i>
+                                <span class="text-blue-600 font-semibold">Admin Panel</span>
+                            </a>
+                            <?php endif; ?>
                             <hr class="my-2 border-gray-200">
                             <a href="user/logout.php" class="flex items-center space-x-3 px-4 py-2 hover:bg-red-50 transition-colors">
                                 <i class="ri-logout-box-r-line text-red-500"></i>
@@ -334,10 +360,11 @@
     </header>
 
     <!-- नेपाली नोट: मुख्य हिरो सेसन (मुख्य शीर्षक र खोजी) -->
-    <section class="hero-section w-full py-16 md:py-24">
-        <div class="container mx-auto px-4">
-            <div class="w-full max-w-xl">
-                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4" data-i18n="find_perfect_room">Find Your Perfect Room</h1>
+    <section class="hero-section w-full py-16 md:py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-50/50 to-transparent"></div>
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="w-full max-w-xl fade-in-up">
+                <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 animate-fade-in" data-i18n="find_perfect_room">Find Your Perfect Room</h1>
                 <p class="text-lg text-gray-700 mb-8" data-i18n="discover">Discover thousands of rooms and apartments for rent. Whether you're looking to list your property or find your next home, we've got you covered.</p>
                 
                 <div class="flex flex-col md:flex-row gap-4 mb-8">
@@ -350,17 +377,19 @@
                     <?php endif; ?>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-lg p-4">
+                <div class="bg-white rounded-xl shadow-2xl p-6 border border-gray-100 hover:shadow-3xl transition-all duration-300">
                   <form id="location-search-form" class="flex flex-col md:flex-row gap-4">
                     <div class="flex-grow">
                       <div class="relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none w-10 h-10">
-                          <i class="ri-map-pin-line text-gray-400"></i>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                          <i class="ri-map-pin-line text-blue-500 text-xl"></i>
                         </div>
-                        <input type="text" name="location" id="location-input" class="w-full pl-10 pr-4 py-3 border-none rounded bg-gray-50 custom-input" placeholder="Enter location" required>
+                        <input type="text" name="location" id="location-input" class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-lg bg-gray-50 custom-input focus:bg-white focus:border-blue-500 transition-all duration-300 text-lg" placeholder="Enter location to search..." required>
                       </div>
                     </div>
-                    <button type="submit" class="px-6 py-3 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">Search</button>
+                    <button type="submit" class="px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg whitespace-nowrap font-semibold text-lg">
+                      <i class="ri-search-line mr-2"></i>Search
+                    </button>
                   </form>
                 </div>
                 
@@ -399,8 +428,10 @@
             </div>
             
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:transform hover:scale-105">
-                    <div class="h-48 bg-gray-200" style="background-image: url('https://readdy.ai/api/search-image?query=A%20person%20holding%20keys%20to%20a%20new%20apartment%2C%20standing%20in%20a%20doorway%20with%20a%20welcoming%20smile.%20The%20scene%20shows%20a%20well-maintained%20property%20with%20good%20lighting%2C%20clean%20interiors%2C%20and%20a%20sense%20of%20ownership%20and%20pride.%20The%20image%20conveys%20the%20concept%20of%20property%20management%20and%20renting%20out%20spaces.&width=600&height=400&seq=2&orientation=landscape'); background-size: cover; background-position: center;"></div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105 fade-in-up">
+                    <div class="h-48 bg-gray-200 relative overflow-hidden" style="background-image: url('https://readdy.ai/api/search-image?query=A%20person%20holding%20keys%20to%20a%20new%20apartment%2C%20standing%20in%20a%20doorway%20with%20a%20welcoming%20smile.%20The%20scene%20shows%20a%20well-maintained%20property%20with%20good%20lighting%2C%20clean%20interiors%2C%20and%20a%20sense%20of%20ownership%20and%20pride.%20The%20image%20conveys%20the%20concept%20of%20property%20management%20and%20renting%20out%20spaces.&width=600&height=400&seq=2&orientation=landscape'); background-size: cover; background-position: center;">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-2">Room Owner</h3>
                         <p class="text-gray-600 mb-4">List your property, manage bookings, and connect with potential tenants. Our platform makes property management simple and efficient.</p>
@@ -432,8 +463,10 @@
                     </div>
                 </div>
                 
-                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-transform hover:transform hover:scale-105">
-                    <div class="h-48 bg-gray-200" style="background-image: url('https://readdy.ai/api/search-image?query=A%20person%20looking%20at%20apartment%20listings%20on%20a%20smartphone%20or%20tablet%2C%20sitting%20in%20a%20coffee%20shop%20or%20comfortable%20space.%20The%20individual%20appears%20focused%20and%20engaged%20in%20searching%20for%20accommodation.%20The%20scene%20conveys%20the%20modern%20approach%20to%20finding%20housing%20through%20digital%20platforms.&width=600&height=400&seq=3&orientation=landscape'); background-size: cover; background-position: center;"></div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:transform hover:scale-105 fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="h-48 bg-gray-200 relative overflow-hidden" style="background-image: url('https://readdy.ai/api/search-image?query=A%20person%20looking%20at%20apartment%20listings%20on%20a%20smartphone%20or%20tablet%2C%20sitting%20in%20a%20coffee%20shop%20or%20comfortable%20space.%20The%20individual%20appears%20focused%20and%20engaged%20in%20searching%20for%20accommodation.%20The%20scene%20conveys%20the%20modern%20approach%20to%20finding%20housing%20through%20digital%20platforms.&width=600&height=400&seq=3&orientation=landscape'); background-size: cover; background-position: center;">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </div>
                     <div class="p-6">
                         <h3 class="text-xl font-bold mb-2">Room Seeker</h3>
                         <p class="text-gray-600 mb-4">Find your perfect room with our advanced search tools. Filter by location, budget, amenities, and more to discover your ideal living space.</p>
@@ -473,52 +506,58 @@
             </div>
             
             <div class="grid md:grid-cols-3 gap-8">
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-blue-400 to-blue-600 text-white rounded-full mb-4">
                         <i class="ri-map-pin-line text-xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Interactive Map Search</h3>
                     <p class="text-gray-600">Find rooms in your preferred location with our interactive map interface powered by Google Maps.</p>
+                    <a href="find-rooms.php" class="mt-4 inline-block text-primary hover:underline font-medium">
+                        View Map <i class="ri-arrow-right-line"></i>
+                    </a>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full mb-4">
                         <i class="ri-message-3-line text-xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">In-App Messaging</h3>
                     <p class="text-gray-600">Communicate directly with property owners or potential tenants through our secure messaging system.</p>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-purple-400 to-purple-600 text-white rounded-full mb-4">
                         <i class="ri-ai-generate text-xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">AI Recommendations</h3>
                     <p class="text-gray-600">Get personalized room suggestions based on your preferences and previous searches.</p>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-red-400 to-red-600 text-white rounded-full mb-4">
                         <i class="ri-shield-check-line text-xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Verified Owners</h3>
                     <p class="text-gray-600">Look for the verification badge to ensure you're dealing with trusted property owners.</p>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up" style="animation-delay: 0.4s;">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-yellow-400 to-yellow-600 text-white rounded-full mb-4">
                         <i class="ri-translate-2 text-xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Multilingual Support</h3>
                     <p class="text-gray-600">Use our platform in multiple languages including English, Nepali, and Japanese.</p>
                 </div>
                 
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <div class="w-12 h-12 flex items-center justify-center bg-primary/10 text-primary rounded-full mb-4">
+                <div class="bg-white p-6 rounded-lg shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up" style="animation-delay: 0.5s;">
+                    <div class="w-12 h-12 flex items-center justify-center bg-gradient-to-br from-indigo-400 to-indigo-600 text-white rounded-full mb-4">
                         <i class="ri-calculator-line text-xl"></i>
                     </div>
                     <h3 class="text-xl font-semibold mb-2">Rent Calculator</h3>
                     <p class="text-gray-600">Calculate total costs including utilities and additional fees for better financial planning.</p>
+                    <a href="rent-calculator.php" class="mt-4 inline-block text-primary hover:underline font-medium">
+                        Try Calculator <i class="ri-arrow-right-line"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -536,36 +575,36 @@
             
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <!-- For Room Seekers -->
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h3 class="text-xl font-bold mb-4 text-center">For Room Seekers</h3>
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up">
+                    <h3 class="text-xl font-bold mb-4 text-center text-primary">For Room Seekers</h3>
                     
                     <div class="space-y-6">
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">1</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">1</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Create an account</h4>
                                 <p class="text-gray-600 text-sm mt-1">Sign up and complete your profile with your preferences.</p>
                             </div>
                         </div>
                         
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">2</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">2</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Search for rooms</h4>
                                 <p class="text-gray-600 text-sm mt-1">Use filters to find properties that match your requirements.</p>
                             </div>
                         </div>
                         
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">3</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">3</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Contact owners</h4>
                                 <p class="text-gray-600 text-sm mt-1">Message property owners directly through our platform.</p>
                             </div>
                         </div>
                         
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">4</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">4</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Schedule viewings</h4>
                                 <p class="text-gray-600 text-sm mt-1">Arrange to see the property and finalize your rental agreement.</p>
@@ -575,36 +614,36 @@
                 </div>
                 
                 <!-- For Room Owners -->
-                <div class="bg-white p-6 rounded-lg shadow-sm">
-                    <h3 class="text-xl font-bold mb-4 text-center">For Room Owners</h3>
+                <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 fade-in-up" style="animation-delay: 0.1s;">
+                    <h3 class="text-xl font-bold mb-4 text-center text-primary">For Room Owners</h3>
                     
                     <div class="space-y-6">
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">1</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">1</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Create an account</h4>
                                 <p class="text-gray-600 text-sm mt-1">Sign up as a property owner and verify your identity.</p>
                             </div>
                         </div>
                         
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">2</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">2</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">List your property</h4>
                                 <p class="text-gray-600 text-sm mt-1">Add details, photos, and set your rental terms.</p>
                             </div>
                         </div>
                         
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">3</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">3</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Manage inquiries</h4>
                                 <p class="text-gray-600 text-sm mt-1">Respond to messages and arrange viewings with interested renters.</p>
                             </div>
                         </div>
                         
-                        <div class="flex">
-                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-primary text-white rounded-full font-bold">4</div>
+                        <div class="flex group">
+                            <div class="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full font-bold shadow-lg group-hover:scale-110 transition-transform duration-300">4</div>
                             <div class="ml-4">
                                 <h4 class="font-semibold">Secure your tenant</h4>
                                 <p class="text-gray-600 text-sm mt-1">Select your preferred tenant and finalize the rental agreement.</p>
@@ -616,43 +655,156 @@
         </div>
     </section>
 
-    
+    <!-- Statistics Counter Section -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-blue-500 text-white">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div class="fade-in-up">
+                    <div class="text-5xl font-bold mb-2 counter" data-target="<?php 
+                        require_once 'db.php';
+                        $countStmt = $conn->prepare("SELECT COUNT(*) FROM properties");
+                        $countStmt->execute();
+                        $countStmt->bind_result($totalRooms);
+                        $countStmt->fetch();
+                        $countStmt->close();
+                        echo $totalRooms ?? 0;
+                    ?>">0</div>
+                    <div class="text-xl opacity-90">Properties Listed</div>
+                </div>
+                <div class="fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="text-5xl font-bold mb-2 counter" data-target="<?php 
+                        $userStmt = $conn->prepare("SELECT COUNT(*) FROM users");
+                        $userStmt->execute();
+                        $userStmt->bind_result($totalUsers);
+                        $userStmt->fetch();
+                        $userStmt->close();
+                        echo $totalUsers ?? 0;
+                    ?>">0</div>
+                    <div class="text-xl opacity-90">Active Users</div>
+                </div>
+                <div class="fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="text-5xl font-bold mb-2 counter" data-target="95">0</div>
+                    <div class="text-xl opacity-90">Success Rate</div>
+                </div>
+                <div class="fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="text-5xl font-bold mb-2 counter" data-target="24">0</div>
+                    <div class="text-xl opacity-90">Support Hours</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold mb-4">What Our Users Say</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto">Don't just take our word for it. Here's what our community has to say about RoomFinder.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow fade-in-up">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-xl mr-4">
+                            S
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Sarah Johnson</h4>
+                            <p class="text-sm text-gray-500">Room Seeker</p>
+                        </div>
+                    </div>
+                    <div class="flex mb-3">
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-600 italic">"RoomFinder made finding my perfect apartment so easy! The search filters are amazing and I found exactly what I was looking for within days."</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-50 to-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center text-white font-bold text-xl mr-4">
+                            M
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Michael Chen</h4>
+                            <p class="text-sm text-gray-500">Room Owner</p>
+                        </div>
+                    </div>
+                    <div class="flex mb-3">
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-600 italic">"As a property owner, RoomFinder has been a game-changer. I've rented out all my properties quickly and the messaging system is so convenient!"</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-50 to-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="flex items-center mb-4">
+                        <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white font-bold text-xl mr-4">
+                            E
+                        </div>
+                        <div>
+                            <h4 class="font-semibold">Emily Rodriguez</h4>
+                            <p class="text-sm text-gray-500">Room Seeker</p>
+                        </div>
+                    </div>
+                    <div class="flex mb-3">
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                        <i class="ri-star-fill text-yellow-400"></i>
+                    </div>
+                    <p class="text-gray-600 italic">"The AI recommendations feature is incredible! It suggested properties I never would have found on my own. Highly recommend!"</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     
     <!-- नेपाली नोट: CTA सेसन (Call to Action) -->
-    <section class="py-16 bg-primary">
-        <div class="container mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold text-white mb-4">Ready to Find Your Perfect Room?</h2>
-            <p class="text-white/80 max-w-2xl mx-auto mb-8">Join thousands of satisfied users who have found their ideal living situation through RoomFinder.</p>
+    <section class="py-16 bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 left-0 w-72 h-72 bg-white rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        </div>
+        <div class="container mx-auto px-4 text-center relative z-10 fade-in-up">
+            <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Room?</h2>
+            <p class="text-white/90 max-w-2xl mx-auto mb-8 text-lg">Join thousands of satisfied users who have found their ideal living situation through RoomFinder.</p>
             
             <div class="flex flex-col sm:flex-row justify-center gap-4">
-                <a href="find-rooms.php" class="px-6 py-3 bg-white text-primary rounded-button hover:bg-gray-100 transition-colors whitespace-nowrap">Find a Room</a>
+                <a href="find-rooms.php" class="px-8 py-4 bg-white text-primary rounded-button hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg whitespace-nowrap font-semibold">Find a Room</a>
                 <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
-                <a href="list-property.php" class="px-6 py-3 border border-white text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap">List Your Property</a>
+                <a href="list-property.php" class="px-8 py-4 border-2 border-white text-white rounded-button hover:bg-white/10 transition-all duration-300 transform hover:scale-105 whitespace-nowrap font-semibold">List Your Property</a>
                 <?php endif; ?>
             </div>
         </div>
     </section>
 
     <!-- नेपाली नोट: Footer (पाद लेख) -->
-    <footer class="bg-gray-900 text-white pt-12 pb-6">
+    <footer class="bg-gradient-to-b from-gray-900 to-gray-800 text-white pt-12 pb-6">
         <div class="container mx-auto px-4">
             <div class="grid md:grid-cols-4 gap-8 mb-8">
                 <div>
                     <a href="#" class="text-2xl font-['Pacifico'] text-white mb-4 inline-block">RoomFinder</a>
                     <p class="text-gray-400 mb-4">Find your perfect room or tenant with our easy-to-use platform.</p>
                     <div class="flex space-x-4">
-                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full hover:bg-primary transition-colors">
-                            <i class="ri-facebook-fill"></i>
+                        <a href="#" class="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full hover:bg-blue-600 transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                            <i class="ri-facebook-fill text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full hover:bg-primary transition-colors">
-                            <i class="ri-twitter-x-fill"></i>
+                        <a href="#" class="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full hover:bg-blue-400 transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                            <i class="ri-twitter-x-fill text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full hover:bg-primary transition-colors">
-                            <i class="ri-instagram-fill"></i>
+                        <a href="#" class="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full hover:bg-pink-600 transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                            <i class="ri-instagram-fill text-lg"></i>
                         </a>
-                        <a href="#" class="w-10 h-10 flex items-center justify-center bg-gray-800 rounded-full hover:bg-primary transition-colors">
-                            <i class="ri-linkedin-fill"></i>
+                        <a href="#" class="w-12 h-12 flex items-center justify-center bg-gray-800 rounded-full hover:bg-blue-700 transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                            <i class="ri-linkedin-fill text-lg"></i>
                         </a>
                     </div>
                 </div>
@@ -711,10 +863,14 @@
             
             <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 RoomFinder. All rights reserved.</p>
-                <div class="flex space-x-4">
+                <div class="flex space-x-4 items-center">
                     <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Cookies</a>
+                    <span class="text-gray-600">|</span>
+                    <a href="admin/login.php" class="text-gray-500 hover:text-gray-300 transition-colors text-xs" title="Admin Login">
+                        <i class="ri-admin-line"></i> Admin
+                    </a>
                 </div>
             </div>
         </div>
@@ -870,6 +1026,75 @@ chatForm.onsubmit = async function(e) {
   chatInput.disabled = false;
   chatInput.focus();
 };
+
+// Counter Animation
+function animateCounter(element) {
+    const target = parseInt(element.getAttribute('data-target'));
+    const duration = 2000; // 2 seconds
+    const increment = target / (duration / 16); // 60fps
+    let current = 0;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            element.textContent = target;
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.floor(current);
+        }
+    }, 16);
+}
+
+// Intersection Observer for animations
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+};
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.style.opacity = '1';
+            entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+            
+            // Animate counters if they exist
+            const counters = entry.target.querySelectorAll('.counter');
+            counters.forEach(counter => {
+                if (!counter.classList.contains('animated')) {
+                    counter.classList.add('animated');
+                    animateCounter(counter);
+                }
+            });
+            
+            observer.unobserve(entry.target);
+        }
+    });
+}, observerOptions);
+
+// Observe all fade-in-up elements
+document.addEventListener('DOMContentLoaded', () => {
+    const fadeElements = document.querySelectorAll('.fade-in-up');
+    fadeElements.forEach(el => {
+        observer.observe(el);
+    });
+    
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            const href = this.getAttribute('href');
+            if (href !== '#' && href.length > 1) {
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+        });
+    });
+});
 </script>
 </body>
 </html>

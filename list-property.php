@@ -304,7 +304,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $unreadStmt->fetch();
                     $unreadStmt->close();
                     if ($unread_count > 0) {
-                        echo '<span style="position:absolute;top:-5px;right:-5px;background:#FF6B6B;color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;">' . $unread_count . '</span>';
+                        echo '<span style="position:absolute;top:0;right:0;background:#FF6B6B;color:white;border-radius:50%;width:20px;height:20px;min-width:20px;min-height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;line-height:20px;transform:translate(50%,-50%);">' . $unread_count . '</span>';
                     }
                     ?>
                 </a>

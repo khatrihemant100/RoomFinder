@@ -13,10 +13,10 @@ $message = "";
 $messageType = "";
 
 // Get current user data
-$stmt = $conn->prepare("SELECT name, email, role, profile_photo FROM users WHERE id = ?");
+$stmt = $conn->prepare("SELECT name, email, role, profile_photo, is_verified FROM users WHERE id = ?");
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
-$stmt->bind_result($current_name, $current_email, $current_role, $current_profile_photo);
+$stmt->bind_result($current_name, $current_email, $current_role, $current_profile_photo, $current_is_verified);
 $stmt->fetch();
 $stmt->close();
 
@@ -318,7 +318,14 @@ $msgStmt->close();
                             </div>
                         <?php endif; ?>
                     </div>
-                    <h3 class="text-xl font-bold mb-2"><?php echo htmlspecialchars($current_name); ?></h3>
+                    <div class="flex items-center justify-center gap-2 mb-2">
+                        <h3 class="text-xl font-bold"><?php echo htmlspecialchars($current_name); ?></h3>
+                        <?php if ($current_role === 'owner' && $current_is_verified): ?>
+                            <span class="px-2 py-1 bg-green-500 text-white rounded-full text-xs font-semibold flex items-center gap-1" title="Verified Owner">
+                                <i class="ri-shield-check-fill"></i> Verified
+                            </span>
+                        <?php endif; ?>
+                    </div>
                     <p class="text-gray-600 mb-2"><?php echo htmlspecialchars($current_email); ?></p>
                     <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold <?php echo $current_role === 'owner' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'; ?>">
                         <?php echo ucfirst($current_role); ?>

@@ -25,9 +25,13 @@ if (isset($_GET['api']) && $_GET['api'] == '1') {
     exit;
 }
 
-// Fetch all rooms
+// Fetch all rooms with owner verification status
 $rooms = [];
-$res = $conn->query("SELECT * FROM properties ORDER BY created_at DESC");
+$query = "SELECT p.*, u.is_verified, u.name as owner_name 
+          FROM properties p 
+          LEFT JOIN users u ON p.user_id = u.id 
+          ORDER BY p.created_at DESC";
+$res = $conn->query($query);
 while($row = $res->fetch_assoc()) $rooms[] = $row;
 ?>
 <script>
@@ -46,6 +50,7 @@ while($row = $res->fetch_assoc()) $rooms[] = $row;
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAYoOAIrd7-WYQZzdYbsAjAatGEkKyB6oA&libraries=places"></script>
 <style>
 body { background: #fff !important; font-family: 'Inter', sans-serif; color: #333; min-height:100vh; }
 .container { max-width:1200px; margin:0 auto; }
@@ -271,7 +276,7 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
                     $unreadStmt->fetch();
                     $unreadStmt->close();
                     if ($unread_count > 0) {
-                        echo '<span style="position:absolute;top:-5px;right:-5px;background:#FF6B6B;color:white;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;">' . $unread_count . '</span>';
+                        echo '<span style="position:absolute;top:0;right:0;background:#FF6B6B;color:white;border-radius:50%;width:20px;height:20px;min-width:20px;min-height:20px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:bold;line-height:20px;transform:translate(50%,-50%);">' . $unread_count . '</span>';
                     }
                     ?>
                 </a>
@@ -342,7 +347,18 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
   </div>
 </form>
 
-<h3 id="results-title" class="text-xl font-semibold mb-4">Search Results</h3>
+<div class="flex items-center justify-between mb-4">
+  <h3 id="results-title" class="text-xl font-semibold">Search Results</h3>
+  <button id="toggleMapView" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+    <i class="ri-map-line mr-2"></i>View on Map
+  </button>
+</div>
+
+<!-- Map Container -->
+<div id="mapContainer" style="display:none;height:500px;margin-bottom:30px;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+  <div id="map" style="width:100%;height:100%;"></div>
+</div>
+
 <div id="results" class="results"></div>
 </main>
 
@@ -438,6 +454,7 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
     <span id="modalClose" class="close-btn">&times;</span>
     <h3 id="modalTitle"></h3>
     <img id="modalImage" src="" alt="Room Image" style="width:100%; max-height:300px; object-fit:cover;" />
+    <div id="modalOwner" style="margin:15px 0;padding:10px;background:#f0f7ff;border-radius:8px;"></div>
     <p><strong>Rent:</strong> <span id="modalRent"></span></p>
     <p><strong>Location:</strong> <span id="modalStation"></span></p>
     <p><strong>Type:</strong> <span id="modalType"></span></p>
@@ -471,9 +488,11 @@ function displayRooms(roomsArray) {
   <img src="${room.image_url}" alt="Room Image" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;">
   <div class="rent-badge">¥${room.price ? room.price.toLocaleString() : ''}</div>
   <div class="status-badge ${statusClass}">${statusValue}</div>
+  ${room.is_verified ? '<div class="verified-badge" style="position:absolute;bottom:15px;right:15px;background:#2ecc71;color:white;padding:6px 12px;border-radius:20px;font-size:0.85rem;font-weight:600;box-shadow:0 3px 6px rgba(0,0,0,0.2);"><i class="ri-shield-check-fill"></i> Verified Owner</div>' : ''}
 </div>
 <div class="card-content">
   <h4>${room.title || ''}</h4>
+  ${room.owner_name ? `<p class="flex items-center gap-2"><i class="fas fa-user text-blue-500"></i> <span>${room.owner_name}</span> ${room.is_verified ? '<span class="px-2 py-0.5 bg-green-500 text-white rounded-full text-xs font-semibold flex items-center gap-1"><i class="ri-shield-check-fill text-xs"></i> Verified</span>' : ''}</p>` : ''}
   <p><i class="fas fa-map-marker-alt"></i> ${room.location || ''}</p>
   <p><i class="fas fa-train"></i> ${room.train_station || ''}</p>
   <p><i class="fas fa-home"></i> ${room.type || ''}</p>
@@ -495,6 +514,13 @@ function displayRooms(roomsArray) {
       if(room){
         document.getElementById('modalTitle').textContent = room.title||'';
         document.getElementById('modalImage').src = room.image_url||'';
+        
+        // Owner info with verified badge
+        const ownerHtml = room.owner_name ? 
+          `<strong>Owner:</strong> <span>${room.owner_name}</span> ${room.is_verified ? '<span style="margin-left:8px;padding:4px 8px;background:#2ecc71;color:white;border-radius:12px;font-size:0.85rem;font-weight:600;"><i class="ri-shield-check-fill"></i> Verified Owner</span>' : ''}` : 
+          '';
+        document.getElementById('modalOwner').innerHTML = ownerHtml;
+        
         document.getElementById('modalRent').textContent = room.price ? `¥${room.price.toLocaleString()}`:'';
         document.getElementById('modalStation').textContent = room.location||'';
         document.getElementById('modalType').textContent = room.type||'';
@@ -553,6 +579,7 @@ function handleSearch(e){
            (roomType === '' || (room.type && room.type.toLowerCase().includes(roomType)));
   });
   displayRooms(filteredRooms);
+  if (mapViewActive) updateMapMarkers(filteredRooms);
 }
 
 // Modal Close
@@ -678,6 +705,92 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
 
 searchForm.addEventListener('submit', handleSearch);
 window.onload = ()=>{ displayRooms(rooms); };
+
+// Google Maps Integration
+let map;
+let markers = [];
+let mapViewActive = false;
+
+// Initialize map
+function initMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 12,
+    center: { lat: 35.6762, lng: 139.6503 }, // Tokyo default
+    mapTypeControl: true,
+    streetViewControl: true,
+    fullscreenControl: true
+  });
+}
+
+// Toggle map view
+document.getElementById('toggleMapView')?.addEventListener('click', function() {
+  const mapContainer = document.getElementById('mapContainer');
+  const resultsContainer = document.getElementById('results');
+  mapViewActive = !mapViewActive;
+  
+  if (mapViewActive) {
+    mapContainer.style.display = 'block';
+    resultsContainer.style.display = 'none';
+    this.innerHTML = '<i class="ri-list-check mr-2"></i>View List';
+    if (!map) initMap();
+    updateMapMarkers(rooms);
+  } else {
+    mapContainer.style.display = 'none';
+    resultsContainer.style.display = 'grid';
+    this.innerHTML = '<i class="ri-map-line mr-2"></i>View on Map';
+  }
+});
+
+// Update map markers
+function updateMapMarkers(roomsArray) {
+  // Clear existing markers
+  markers.forEach(marker => marker.setMap(null));
+  markers = [];
+  
+  if (!map || !roomsArray || roomsArray.length === 0) return;
+  
+  const bounds = new google.maps.LatLngBounds();
+  
+  roomsArray.forEach(room => {
+    if (!room.location) return;
+    
+    // Geocode location
+    const geocoder = new google.maps.Geocoder();
+    geocoder.geocode({ address: room.location }, (results, status) => {
+      if (status === 'OK' && results[0]) {
+        const position = results[0].geometry.location;
+        const marker = new google.maps.Marker({
+          position: position,
+          map: map,
+          title: room.title || 'Room',
+          icon: {
+            url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+          }
+        });
+        
+        const infoWindow = new google.maps.InfoWindow({
+          content: `
+            <div style="padding:10px;max-width:250px;">
+              <h4 style="font-weight:bold;margin-bottom:8px;color:#4A90E2;">${room.title || 'Room'}</h4>
+              <p style="margin:4px 0;color:#666;"><i class="fas fa-map-marker-alt"></i> ${room.location}</p>
+              <p style="margin:4px 0;color:#666;"><i class="fas fa-yen-sign"></i> ¥${room.price ? room.price.toLocaleString() : 'N/A'}</p>
+              ${room.is_verified ? '<p style="margin:4px 0;color:#2ecc71;"><i class="ri-shield-check-fill"></i> Verified Owner</p>' : ''}
+              <a href="find-rooms.php?id=${room.id}" style="display:inline-block;margin-top:8px;color:#4A90E2;text-decoration:underline;">View Details</a>
+            </div>
+          `
+        });
+        
+        marker.addListener('click', () => {
+          infoWindow.open(map, marker);
+        });
+        
+        markers.push(marker);
+        bounds.extend(position);
+        map.fitBounds(bounds);
+      }
+    });
+  });
+}
 
 // Toggle user dropdown menu
 function toggleUserDropdown() {

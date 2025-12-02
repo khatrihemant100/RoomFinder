@@ -51,7 +51,7 @@
                     $unreadStmt->fetch();
                     $unreadStmt->close();
                     if ($unread_count > 0) {
-                        echo '<span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">' . $unread_count . '</span>';
+                        echo '<span class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold" style="min-width: 20px; min-height: 20px; line-height: 20px; transform: translate(50%, -50%);">' . $unread_count . '</span>';
                     }
                     ?>
                 </a>
@@ -265,10 +265,14 @@
             </div>
             <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center">
                 <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2025 RoomFinder. All rights reserved.</p>
-                <div class="flex space-x-4">
+                <div class="flex space-x-4 items-center">
                     <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
                     <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Cookies</a>
+                    <span class="text-gray-600">|</span>
+                    <a href="admin/login.php" class="text-gray-500 hover:text-gray-300 transition-colors text-xs" title="Admin Login">
+                        <i class="ri-admin-line"></i> Admin
+                    </a>
                 </div>
             </div>
         </div>

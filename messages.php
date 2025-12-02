@@ -20,6 +20,7 @@ $conversations_query = "
         u.name as other_user_name,
         u.profile_photo as other_user_photo,
         u.role as other_user_role,
+        u.is_verified as other_user_verified,
         (SELECT message FROM messages m2 
          WHERE (m2.sender_id = ? AND m2.receiver_id = other_user_id) 
             OR (m2.sender_id = other_user_id AND m2.receiver_id = ?)
@@ -33,7 +34,7 @@ $conversations_query = "
     FROM messages m
     JOIN users u ON (CASE WHEN m.sender_id = ? THEN m.receiver_id ELSE m.sender_id END = u.id)
     WHERE m.sender_id = ? OR m.receiver_id = ?
-    GROUP BY other_user_id, u.name, u.profile_photo, u.role
+    GROUP BY other_user_id, u.name, u.profile_photo, u.role, u.is_verified
     ORDER BY last_message_time DESC
 ";
 
@@ -68,11 +69,11 @@ if ($selected_room_id) {
 
 if ($selected_user_id) {
     // Get selected user info
-    $userStmt = $conn->prepare("SELECT id, name, email, profile_photo, role FROM users WHERE id = ?");
+    $userStmt = $conn->prepare("SELECT id, name, email, profile_photo, role, is_verified FROM users WHERE id = ?");
     $userStmt->bind_param("i", $selected_user_id);
     $userStmt->execute();
-    $userStmt->bind_result($selected_user['id'], $selected_user['name'], $selected_user['email'], $selected_user['profile_photo'], $selected_user['role']);
-    $userStmt->fetch();
+    $result = $userStmt->get_result();
+    $selected_user = $result->fetch_assoc();
     $userStmt->close();
     
     // Get messages between current user and selected user
@@ -142,11 +143,17 @@ $unreadStmt->close();
             border-radius: 50%;
             width: 20px;
             height: 20px;
+            min-width: 20px;
+            min-height: 20px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: bold;
+            line-height: 20px;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%);
         }
     </style>
 </head>
@@ -251,7 +258,14 @@ $unreadStmt->close();
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center justify-between">
-                                            <h3 class="font-semibold text-gray-900 truncate"><?php echo htmlspecialchars($conv['other_user_name']); ?></h3>
+                                            <div class="flex items-center gap-2">
+                                                <h3 class="font-semibold text-gray-900 truncate"><?php echo htmlspecialchars($conv['other_user_name']); ?></h3>
+                                                <?php if (isset($conv['other_user_verified']) && $conv['other_user_verified'] && $conv['other_user_role'] === 'owner'): ?>
+                                                    <span class="px-1.5 py-0.5 bg-green-500 text-white rounded-full text-xs flex items-center" title="Verified Owner">
+                                                        <i class="ri-shield-check-fill text-xs"></i>
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
                                             <?php if ($conv['last_message_time']): ?>
                                                 <span class="text-xs text-gray-500"><?php echo date('M j', strtotime($conv['last_message_time'])); ?></span>
                                             <?php endif; ?>
@@ -284,7 +298,14 @@ $unreadStmt->close();
                                         </div>
                                     <?php endif; ?>
                                     <div>
-                                        <h3 class="font-semibold"><?php echo htmlspecialchars($selected_user['name']); ?></h3>
+                                        <div class="flex items-center gap-2">
+                                            <h3 class="font-semibold"><?php echo htmlspecialchars($selected_user['name']); ?></h3>
+                                            <?php if ($selected_user['role'] === 'owner' && $selected_user['is_verified']): ?>
+                                                <span class="px-2 py-0.5 bg-green-500 text-white rounded-full text-xs font-semibold flex items-center gap-1" title="Verified Owner">
+                                                    <i class="ri-shield-check-fill"></i>
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
                                         <p class="text-sm text-gray-500"><?php echo ucfirst($selected_user['role']); ?></p>
                                     </div>
                                 </div>
@@ -387,13 +408,29 @@ $unreadStmt->close();
             }
         });
 
-        // Auto-refresh messages every 5 seconds
+        // Auto-refresh messages every 5 seconds (only if user is not typing)
         <?php if ($selected_user_id): ?>
+        let isTyping = false;
+        const messageInput = document.getElementById('messageInput');
+        let lastMessageTime = '<?php echo !empty($messages) ? end($messages)["created_at"] : ""; ?>';
+        
+        if (messageInput) {
+            messageInput.addEventListener('focus', () => { isTyping = true; });
+            messageInput.addEventListener('blur', () => { isTyping = false; });
+            messageInput.addEventListener('input', () => { isTyping = true; });
+        }
+        
         setInterval(function() {
-            fetch('api/get-messages.php?user_id=<?php echo $selected_user_id; ?>')
+            // Don't refresh if user is typing
+            if (isTyping) return;
+            
+            fetch('api/get-messages.php?user_id=<?php echo $selected_user_id; ?>&last_time=' + encodeURIComponent(lastMessageTime))
                 .then(response => response.json())
                 .then(data => {
-                    if (data.success && data.new_messages) {
+                    if (data.success && data.messages && data.messages.length > 0) {
+                        // Update last message time
+                        lastMessageTime = data.messages[data.messages.length - 1].created_at;
+                        // Reload page to show new messages
                         window.location.reload();
                     }
                 })
