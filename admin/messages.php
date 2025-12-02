@@ -29,7 +29,7 @@ $messages = $conn->query("
     FROM messages m
     LEFT JOIN users s ON m.sender_id = s.id
     LEFT JOIN users r ON m.receiver_id = r.id
-    LEFT JOIN properties p ON m.room_id = p.id
+    LEFT JOIN properties p ON m.property_id = p.id
     ORDER BY m.created_at DESC
     LIMIT $per_page OFFSET $offset
 ");

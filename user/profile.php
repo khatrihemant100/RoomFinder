@@ -197,7 +197,7 @@ if ($current_role === 'owner') {
     $propListStmt->close();
     
     // Count inquiries received
-    $inquiryStmt = $conn->prepare("SELECT COUNT(*) FROM inquiries i JOIN properties p ON i.room_id = p.id WHERE p.user_id = ?");
+    $inquiryStmt = $conn->prepare("SELECT COUNT(*) FROM inquiries i JOIN properties p ON i.property_id = p.id WHERE p.user_id = ?");
     $inquiryStmt->bind_param("i", $user_id);
     $inquiryStmt->execute();
     $inquiryStmt->bind_result($inquiries_count);
@@ -207,7 +207,7 @@ if ($current_role === 'owner') {
     // Get inquiries list
     $inqListStmt = $conn->prepare("SELECT i.id, i.name, i.email, i.message, i.created_at, p.title as room_title, p.id as room_id 
                                    FROM inquiries i 
-                                   JOIN properties p ON i.room_id = p.id 
+                                   JOIN properties p ON i.property_id = p.id 
                                    WHERE p.user_id = ? 
                                    ORDER BY i.created_at DESC LIMIT 5");
     $inqListStmt->bind_param("i", $user_id);
@@ -229,7 +229,7 @@ if ($current_role === 'owner') {
     // Get sent inquiries list
     $sentInqListStmt = $conn->prepare("SELECT i.id, i.message, i.created_at, p.title as room_title, p.id as room_id, p.location, p.price
                                        FROM inquiries i 
-                                       JOIN properties p ON i.room_id = p.id 
+                                       JOIN properties p ON i.property_id = p.id 
                                        WHERE i.email = ? 
                                        ORDER BY i.created_at DESC LIMIT 5");
     $sentInqListStmt->bind_param("s", $current_email);

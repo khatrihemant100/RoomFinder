@@ -48,17 +48,17 @@ while ($row = $conversations_result->fetch_assoc()) {
 }
 $stmt->close();
 
-// Get selected conversation
+// Get selected conversation (frontend uses room_id, but we use property_id in database)
 $selected_user_id = isset($_GET['user_id']) ? (int)$_GET['user_id'] : null;
-$selected_room_id = isset($_GET['room_id']) ? (int)$_GET['room_id'] : null;
+$selected_property_id = isset($_GET['room_id']) ? (int)$_GET['room_id'] : null; // Map room_id to property_id
 $selected_user = null;
 $selected_room = null;
 $messages = [];
 
-// Get room info if room_id is provided
-if ($selected_room_id) {
+// Get property info if property_id is provided
+if ($selected_property_id) {
     $roomStmt = $conn->prepare("SELECT id, title, location, price FROM properties WHERE id = ?");
-    $roomStmt->bind_param("i", $selected_room_id);
+    $roomStmt->bind_param("i", $selected_property_id);
     $roomStmt->execute();
     $room_result = $roomStmt->get_result();
     if ($room_row = $room_result->fetch_assoc()) {
@@ -309,8 +309,8 @@ $unreadStmt->close();
                                         <p class="text-sm text-gray-500"><?php echo ucfirst($selected_user['role']); ?></p>
                                     </div>
                                 </div>
-                                <?php if ($selected_room_id): ?>
-                                    <a href="find-rooms.php?id=<?php echo $selected_room_id; ?>" class="text-sm text-blue-500 hover:text-blue-600">
+                                <?php if ($selected_property_id): ?>
+                                    <a href="find-rooms.php?id=<?php echo $selected_property_id; ?>" class="text-sm text-blue-500 hover:text-blue-600">
                                         View Room <i class="ri-arrow-right-line"></i>
                                     </a>
                                 <?php endif; ?>
@@ -345,8 +345,8 @@ $unreadStmt->close();
                             <?php endif; ?>
                             <form id="messageForm" class="flex space-x-2">
                                 <input type="hidden" name="receiver_id" value="<?php echo $selected_user['id']; ?>">
-                                <?php if ($selected_room_id): ?>
-                                    <input type="hidden" name="room_id" value="<?php echo $selected_room_id; ?>">
+                                <?php if ($selected_property_id): ?>
+                                    <input type="hidden" name="room_id" value="<?php echo $selected_property_id; ?>">
                                     <input type="hidden" name="subject" value="Inquiry about: <?php echo htmlspecialchars($selected_room['title']); ?>">
                                 <?php endif; ?>
                                 <input type="text" name="message" id="messageInput" 
