@@ -165,8 +165,265 @@
   }
   #ai-chat-send:hover {
     background: #357ABD;
+  }
 
-    
+  /* Register Modal Styles with Animations */
+  .register-modal-overlay {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    z-index: 10000 !important;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    margin: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .register-modal-overlay.show {
+    display: flex !important;
+    animation: fadeInOverlay 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeInOverlay {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .register-modal-content {
+    background: #fff;
+    max-width: 500px;
+    width: 100%;
+    min-width: 300px;
+    padding: 40px 32px;
+    border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+    text-align: center;
+    margin: auto;
+    transform: scale(0.8);
+    opacity: 0;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    overflow: visible;
+  }
+  
+  .register-modal-overlay.show .register-modal-content {
+    animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  
+  @media (max-width: 640px) {
+    .register-modal-overlay {
+      padding: 20px 10px;
+    }
+    .register-modal-content {
+      width: 100%;
+      padding: 32px 24px;
+      max-width: 100%;
+    }
+  }
+  
+  @media (max-height: 600px) {
+    .register-modal-overlay {
+      align-items: flex-start;
+      padding-top: 20px;
+    }
+  }
+
+  @keyframes modalSlideIn {
+    0% {
+      transform: scale(0.8) translateY(30px);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .register-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.5rem;
+    background: #f3f4f6;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+  }
+
+  .register-modal-close:hover {
+    background: #e5e7eb;
+    color: #333;
+    transform: rotate(90deg) scale(1.1);
+  }
+
+  .register-modal-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    box-shadow: 0 8px 24px rgba(74, 144, 226, 0.3);
+    animation: iconBounce 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes iconBounce {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  .register-modal-title {
+    font-size: 1.75rem;
+    font-weight: bold;
+    margin-bottom: 12px;
+    color: #1f2937;
+    animation: fadeInUp 0.5s ease-out 0.3s both;
+  }
+
+  .register-modal-text {
+    color: #6b7280;
+    margin-bottom: 32px;
+    line-height: 1.7;
+    font-size: 1rem;
+    animation: fadeInUp 0.5s ease-out 0.4s both;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .register-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    animation: fadeInUp 0.5s ease-out 0.5s both;
+  }
+
+  .register-modal-btn-primary {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+    color: white;
+    border-radius: 12px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+    white-space: nowrap;
+  }
+
+  .register-modal-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    background: linear-gradient(135deg, #357ABD 0%, #2a5f94 100%);
+  }
+
+  .register-modal-btn-primary:active {
+    transform: translateY(0);
+  }
+
+  .register-modal-btn-secondary {
+    padding: 14px 28px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    color: #6b7280;
+    border-radius: 12px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+
+  .register-modal-btn-secondary:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+    color: #374151;
+    transform: translateY(-2px);
+  }
+
+  .register-modal-btn-secondary:active {
+    transform: translateY(0);
+  }
+
+  /* Modal close animation */
+  .register-modal-overlay.closing {
+    animation: fadeOutOverlay 0.3s ease-out forwards;
+  }
+
+  .register-modal-overlay.closing .register-modal-content {
+    animation: modalSlideOut 0.3s ease-out forwards;
+  }
+
+  @keyframes fadeOutOverlay {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes modalSlideOut {
+    from {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+    to {
+      transform: scale(0.8) translateY(-30px);
+      opacity: 0;
+    }
   }
 </style>
 </head>
@@ -250,8 +507,8 @@
                             <div>
                                 <div class="font-medium">English</div>
                                 <div class="text-xs text-gray-500">EN</div>
-                            </div>
-                        </button>
+                        </div>
+                    </button>
                         <button onclick="setLanguage('ja')" class="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center space-x-3 transition-colors">
                             <span class="fi fi-jp fis" style="font-size: 1.2rem;"></span>
                             <div>
@@ -269,31 +526,31 @@
                     </div>
                 </div>
                 <?php if(isset($_SESSION["user_id"])): ?>
-                    <?php
+                        <?php 
                     // Get user name, profile photo, and admin status
                     $user_name = $_SESSION["name"] ?? "User";
                     $user_photo = $_SESSION["profile_photo"] ?? null;
                     $user_initial = strtoupper(substr($user_name, 0, 1));
                     $is_admin = false;
                     
-                    // If name is not set or empty, try to get from database
+                        // If name is not set or empty, try to get from database
                     if (empty($user_name) || $user_name === "User") {
-                        require_once 'db.php';
+                            require_once 'db.php';
                         $stmt = $conn->prepare("SELECT name, profile_photo, is_admin FROM users WHERE id = ?");
-                        $stmt->bind_param("i", $_SESSION["user_id"]);
-                        $stmt->execute();
+                            $stmt->bind_param("i", $_SESSION["user_id"]);
+                            $stmt->execute();
                         $stmt->bind_result($dbName, $dbPhoto, $dbIsAdmin);
-                        if ($stmt->fetch() && !empty(trim($dbName))) {
-                            $_SESSION["name"] = trim($dbName);
+                            if ($stmt->fetch() && !empty(trim($dbName))) {
+                                $_SESSION["name"] = trim($dbName);
                             $_SESSION["profile_photo"] = $dbPhoto;
                             $_SESSION["is_admin"] = $dbIsAdmin ?? 0;
                             $user_name = trim($dbName);
                             $user_photo = $dbPhoto;
                             $is_admin = ($dbIsAdmin ?? 0) == 1;
                             $user_initial = strtoupper(substr($user_name, 0, 1));
-                        }
-                        $stmt->close();
-                    } else {
+                            }
+                            $stmt->close();
+                        } else {
                         // Check admin status from session or database
                         if (isset($_SESSION["is_admin"])) {
                             $is_admin = $_SESSION["is_admin"] == 1;
@@ -317,7 +574,7 @@
                             <div class="w-10 h-10 rounded-full <?php echo $user_photo ? '' : 'bg-green-500'; ?> flex items-center justify-center overflow-hidden">
                                 <?php if ($user_photo): ?>
                                     <img src="uploads/<?php echo htmlspecialchars($user_photo); ?>" alt="<?php echo htmlspecialchars($user_name); ?>" class="w-full h-full object-cover">
-                                <?php else: ?>
+                <?php else: ?>
                                     <span class="text-white font-bold text-lg"><?php echo $user_initial; ?></span>
                                 <?php endif; ?>
                             </div>
@@ -403,15 +660,23 @@
                 </div>
                 
                 <!-- Notification Modal for Register as Room Owner -->
-                <div id="register-notification-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:10000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;">
-                  <div style="background:#fff;max-width:500px;width:95vw;padding:32px 24px;border-radius:20px;box-shadow:0 8px 32px rgba(0,0,0,0.25);position:relative;text-align:center;">
-                    <button id="close-register-modal" style="position:absolute;top:12px;right:16px;font-size:1.8rem;background:none;border:none;cursor:pointer;color:#666;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background 0.2s;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">&times;</button>
-                    <div style="font-size:3rem;margin-bottom:16px;">🔔</div>
-                    <h3 style="font-size:1.5rem;font-weight:bold;margin-bottom:12px;color:#333;">Account Required</h3>
-                    <p style="color:#666;margin-bottom:24px;line-height:1.6;">To register as a Room Owner, you need to create an account first. Please create your account to get started with listing your properties.</p>
-                    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-                      <a href="user/createaccount.php?role=owner" class="px-6 py-3 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap" style="text-decoration:none;display:inline-block;">Create Account</a>
-                      <button onclick="closeRegisterNotification()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-button hover:bg-gray-50 transition-colors whitespace-nowrap">Cancel</button>
+                <div id="register-notification-modal" class="register-modal-overlay" style="display:none;">
+                  <div class="register-modal-content">
+                    <button id="close-register-modal" class="register-modal-close" onclick="closeRegisterNotification()" title="Close">
+                      <i class="ri-close-line"></i>
+                    </button>
+                    <div class="register-modal-icon">
+                      <i class="ri-user-add-line"></i>
+                    </div>
+                    <h3 class="register-modal-title">Account Required</h3>
+                    <p class="register-modal-text">To register as a Room Owner, you need to create an account first. Please create your account to get started with listing your properties.</p>
+                    <div class="register-modal-buttons">
+                      <a href="user/createaccount.php?role=owner" class="register-modal-btn-primary">
+                        <i class="ri-user-add-fill"></i> Create Account
+                      </a>
+                      <button onclick="closeRegisterNotification()" class="register-modal-btn-secondary">
+                        <i class="ri-close-line"></i> Cancel
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -940,21 +1205,72 @@ document.getElementById('search-modal').onclick = function(e) {
   if (e.target === this) this.style.display = 'none';
 };
 
-// Register as Room Owner notification functions
+// Register as Room Owner notification functions with smooth animations
 function showRegisterNotification() {
   const modal = document.getElementById('register-notification-modal');
+  if (!modal) return;
+  
+  // Remove any previous state
+  modal.classList.remove('closing');
   modal.style.display = 'flex';
+  modal.style.opacity = '0';
+  
+  // Scroll to top of overlay to ensure modal is visible
+  modal.scrollTop = 0;
+  
+  // Force reflow to ensure display is applied
+  void modal.offsetHeight;
+  
+  // Add show class for animation
+  setTimeout(() => {
+    modal.classList.add('show');
+    // Ensure modal content is visible by scrolling if needed
+    const content = modal.querySelector('.register-modal-content');
+    if (content) {
+      content.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 10);
+  
+  // Prevent body scroll when modal is open
+  document.body.style.overflow = 'hidden';
+  document.body.style.position = 'fixed';
+  document.body.style.width = '100%';
 }
 
 function closeRegisterNotification() {
   const modal = document.getElementById('register-notification-modal');
-  modal.style.display = 'none';
+  if (!modal) return;
+  
+  modal.classList.add('closing');
+  modal.classList.remove('show');
+  
+  // Restore body scroll immediately
+  document.body.style.overflow = '';
+  document.body.style.position = '';
+  document.body.style.width = '';
+  
+  // Wait for animation to complete before hiding
+  setTimeout(() => {
+    modal.style.display = 'none';
+    modal.classList.remove('closing');
+    modal.scrollTop = 0; // Reset scroll position
+  }, 300);
 }
 
-document.getElementById('close-register-modal').onclick = closeRegisterNotification;
-document.getElementById('register-notification-modal').onclick = function(e) {
-  if (e.target === this) closeRegisterNotification();
-};
+// Close modal when clicking outside
+document.getElementById('register-notification-modal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeRegisterNotification();
+  }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  const modal = document.getElementById('register-notification-modal');
+  if (e.key === 'Escape' && modal.style.display === 'flex') {
+    closeRegisterNotification();
+  }
+});
 
 // RoomFinder AI Chat - Using server-side API (secure)
 async function askGeminiAI(userMessage) {

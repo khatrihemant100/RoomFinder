@@ -91,13 +91,312 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 .details-btn { display:block; width:100%; text-align:center; background:#3498db; margin-top:15px; padding:10px; font-size:1rem; color:#fff; border:none; border-radius:8px; cursor:pointer; transition:background 0.2s; }
 .details-btn:hover { background:#217dbb; }
 
-/* Modal Styles */
-.modal { display:none; position:fixed; z-index:999; left:0; top:0; width:100%; height:100%; overflow:auto; background-color:rgba(0,0,0,0.6); }
-.modal-content { background-color:#fff; margin:10% auto; padding:30px; border-radius:12px; width:90%; max-width:500px; position:relative; box-shadow:0 8px 30px rgba(0,0,0,0.2); animation:fadeIn 0.3s ease; }
-.close-btn { position:absolute; top:15px; right:20px; font-size:28px; cursor:pointer; color:#aaa; }
-.close-btn:hover { color:#333; }
-.modal-content img { width:100%; border-radius:8px; margin-bottom:15px; }
-@keyframes fadeIn { from {opacity:0; transform:scale(0.95);} to {opacity:1; transform:scale(1);} }
+/* Modal Styles - Enhanced Room Details Modal */
+.modal { 
+  display:none; 
+  position:fixed; 
+  z-index:9999; 
+  left:0; 
+  top:0; 
+  width:100%; 
+  height:100%; 
+  overflow-y:auto; 
+  overflow-x:hidden;
+  background-color:rgba(0,0,0,0.7);
+  backdrop-filter: blur(5px);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.modal-content { 
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  margin: 40px auto;
+  padding: 0;
+  border-radius: 24px;
+  width: 90%;
+  max-width: 800px;
+  position: relative;
+  box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+  animation: modalSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  overflow: hidden;
+  border: 1px solid rgba(74, 144, 226, 0.1);
+}
+
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.close-btn { 
+  position:absolute; 
+  top:20px; 
+  right:20px; 
+  font-size:32px; 
+  cursor:pointer; 
+  color:#666;
+  background: rgba(255, 255, 255, 0.9);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.close-btn:hover { 
+  color:#e74c3c;
+  background: #fff;
+  transform: rotate(90deg) scale(1.1);
+  box-shadow: 0 6px 20px rgba(231, 76, 60, 0.3);
+}
+
+/* Room Detail Modal Specific Styles */
+#roomModal .modal-content {
+  max-width: 900px;
+}
+
+.room-detail-header {
+  position: relative;
+  height: 350px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+}
+
+.room-detail-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.4));
+  z-index: 1;
+}
+
+#modalImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.room-detail-body {
+  padding: 40px;
+  position: relative;
+}
+
+.room-detail-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 20px;
+  font-family: 'Pacifico', cursive;
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.room-detail-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.room-info-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+  padding: 20px;
+  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.room-info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(74, 144, 226, 0.15);
+  border-color: #4A90E2;
+}
+
+.room-info-card .info-label {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-info-card .info-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1f2937;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-info-card .info-value i {
+  color: #4A90E2;
+  font-size: 1.2rem;
+}
+
+.room-detail-description {
+  background: #f9fafb;
+  padding: 25px;
+  border-radius: 16px;
+  border-left: 4px solid #4A90E2;
+  margin-bottom: 30px;
+  line-height: 1.8;
+  color: #374151;
+  font-size: 1.05rem;
+}
+
+.room-detail-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top: 30px;
+  padding-top: 30px;
+  border-top: 2px solid #e5e7eb;
+}
+
+.action-btn {
+  flex: 1;
+  min-width: 150px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.action-btn-primary {
+  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  color: white;
+}
+
+.action-btn-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(74, 144, 226, 0.4);
+}
+
+.action-btn-success {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+}
+
+.action-btn-success:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(46, 204, 113, 0.4);
+}
+
+.action-btn-secondary {
+  background: white;
+  color: #4A90E2;
+  border: 2px solid #4A90E2;
+}
+
+.action-btn-secondary:hover {
+  background: #4A90E2;
+  color: white;
+  transform: translateY(-3px);
+}
+
+.owner-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  color: white;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+  margin-bottom: 20px;
+}
+
+.status-badge-modal {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-left: 10px;
+}
+
+.status-Available { 
+  background: #2ecc71; 
+  color: white;
+}
+
+.status-Not_available { 
+  background: #e74c3c; 
+  color: white;
+}
+
+.status-Under_Maintenance { 
+  background: #f39c12; 
+  color: white;
+}
+
+.status-Reserved { 
+  background: #3498db; 
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    margin: 20px auto;
+  }
+  
+  .room-detail-header {
+    height: 250px;
+  }
+  
+  .room-detail-body {
+    padding: 25px;
+  }
+  
+  .room-detail-title {
+    font-size: 1.8rem;
+  }
+  
+  .room-detail-info-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .room-detail-actions {
+    flex-direction: column;
+  }
+  
+  .action-btn {
+    width: 100%;
+  }
+}
 /* Inquiry Modal Enhancement with Animations */
 #inquiryModal {
   animation: fadeIn 0.3s ease;
@@ -447,15 +746,85 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 <div id="roomModal" class="modal">
   <div class="modal-content">
     <span id="modalClose" class="close-btn">&times;</span>
-    <h3 id="modalTitle"></h3>
-    <img id="modalImage" src="" alt="Room Image" style="width:100%; max-height:300px; object-fit:cover;" />
-    <div id="modalOwner" style="margin:15px 0;padding:10px;background:#f0f7ff;border-radius:8px;"></div>
-    <p><strong>Rent:</strong> <span id="modalRent"></span></p>
-    <p><strong>Location:</strong> <span id="modalStation"></span></p>
-    <p><strong>Type:</strong> <span id="modalType"></span></p>
-    <p id="modalDescription"></p>
-    <p><strong>Train Station:</strong> <span id="modalTrainStation"></span></p>
-    <p><strong>Status:</strong> <span id="modalStatus"></span></p>
+    
+    <!-- Header with Image -->
+    <div class="room-detail-header">
+      <img id="modalImage" src="" alt="Room Image" />
+    </div>
+    
+    <!-- Body Content -->
+    <div class="room-detail-body">
+      <h2 class="room-detail-title" id="modalTitle"></h2>
+      
+      <div id="modalOwner"></div>
+      
+      <!-- Info Grid -->
+      <div class="room-detail-info-grid">
+        <div class="room-info-card">
+          <div class="info-label">
+            <i class="fas fa-yen-sign"></i> Monthly Rent
+          </div>
+          <div class="info-value" id="modalRent"></div>
+        </div>
+        
+        <div class="room-info-card">
+          <div class="info-label">
+            <i class="fas fa-map-marker-alt"></i> Location
+          </div>
+          <div class="info-value">
+            <i class="fas fa-map-marker-alt"></i>
+            <span id="modalStation"></span>
+          </div>
+        </div>
+        
+        <div class="room-info-card">
+          <div class="info-label">
+            <i class="fas fa-home"></i> Room Type
+          </div>
+          <div class="info-value">
+            <i class="fas fa-home"></i>
+            <span id="modalType"></span>
+          </div>
+        </div>
+        
+        <div class="room-info-card">
+          <div class="info-label">
+            <i class="fas fa-train"></i> Train Station
+          </div>
+          <div class="info-value">
+            <i class="fas fa-train"></i>
+            <span id="modalTrainStation"></span>
+          </div>
+        </div>
+        
+        <div class="room-info-card">
+          <div class="info-label">
+            <i class="fas fa-info-circle"></i> Status
+          </div>
+          <div class="info-value">
+            <span id="modalStatus"></span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Description -->
+      <div class="room-detail-description">
+        <h3 style="font-size: 1.3rem; font-weight: 600; color: #1f2937; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+          <i class="fas fa-align-left" style="color: #4A90E2;"></i> Description
+        </h3>
+        <p id="modalDescription" style="margin: 0; color: #4b5563;"></p>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="room-detail-actions">
+        <button class="action-btn action-btn-primary" id="modalInquiryBtn">
+          <i class="fas fa-envelope"></i> Send Inquiry
+        </button>
+        <a href="#" class="action-btn action-btn-secondary" id="modalMessageBtn" style="display: none;">
+          <i class="fas fa-comments"></i> Message Owner
+        </a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -507,22 +876,84 @@ function displayRooms(roomsArray) {
       const roomId = parseInt(this.getAttribute('data-id'));
       const room = rooms.find(r=>r.id == roomId);
       if(room){
-        document.getElementById('modalTitle').textContent = room.title||'';
-        document.getElementById('modalImage').src = room.image_url||'';
+        // Set title
+        document.getElementById('modalTitle').textContent = room.title || 'Room Details';
+        
+        // Set image with fallback
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = room.image_url || 'https://via.placeholder.com/800x350?text=No+Image';
+        modalImage.onerror = function() {
+          this.src = 'https://via.placeholder.com/800x350?text=No+Image';
+        };
         
         // Owner info with verified badge
-        const ownerHtml = room.owner_name ? 
-          `<strong>Owner:</strong> <span>${room.owner_name}</span> ${room.is_verified ? '<span style="margin-left:8px;padding:4px 8px;background:#2ecc71;color:white;border-radius:12px;font-size:0.85rem;font-weight:600;"><i class="ri-shield-check-fill"></i> Verified Owner</span>' : ''}` : 
-          '';
-        document.getElementById('modalOwner').innerHTML = ownerHtml;
+        const ownerDiv = document.getElementById('modalOwner');
+        if (room.owner_name) {
+          ownerDiv.innerHTML = `
+            <div class="owner-badge">
+              <i class="fas fa-user"></i>
+              <span>${room.owner_name}</span>
+              ${room.is_verified ? '<i class="ri-shield-check-fill"></i> Verified Owner' : ''}
+            </div>
+          `;
+        } else {
+          ownerDiv.innerHTML = '';
+        }
         
-        document.getElementById('modalRent').textContent = room.price ? `¥${room.price.toLocaleString()}`:'';
-        document.getElementById('modalStation').textContent = room.location||'';
-        document.getElementById('modalType').textContent = room.type||'';
-        document.getElementById('modalDescription').textContent = room.description||'';
-        document.getElementById('modalTrainStation').textContent = room.train_station||'';
-        document.getElementById('modalStatus').textContent = room.status || 'Unknown';
+        // Set rent with icon
+        const rentValue = room.price ? `¥${room.price.toLocaleString()}` : 'Not specified';
+        document.getElementById('modalRent').innerHTML = `<i class="fas fa-yen-sign"></i> ${rentValue}`;
+        
+        // Set location
+        document.getElementById('modalStation').textContent = room.location || 'Not specified';
+        
+        // Set type
+        document.getElementById('modalType').textContent = room.type || 'Not specified';
+        
+        // Set description
+        const description = room.description || 'No description available.';
+        document.getElementById('modalDescription').textContent = description;
+        
+        // Set train station
+        document.getElementById('modalTrainStation').textContent = room.train_station || 'Not specified';
+        
+        // Set status with badge
+        const statusValue = room.status ? room.status.replace('_', ' ') : 'Unknown';
+        const statusClass = room.status ? `status-${room.status}` : 'status-';
+        document.getElementById('modalStatus').innerHTML = `<span class="status-badge-modal ${statusClass}">${statusValue}</span>`;
+        
+        // Set up inquiry button
+        const inquiryBtn = document.getElementById('modalInquiryBtn');
+        inquiryBtn.onclick = function() {
+          document.getElementById('roomModal').style.display = 'none';
+          // Trigger inquiry modal
+          document.getElementById('inquiryRoomId').value = roomId;
+          document.getElementById('inquiryRoomTitle').value = room.title || '';
+          <?php if(isset($_SESSION["user_id"])): ?>
+          document.getElementById('inqName').value = '<?php echo htmlspecialchars($_SESSION["name"] ?? ""); ?>';
+          <?php endif; ?>
+          document.getElementById('inqEmail').value = '';
+          document.getElementById('inqPhone').value = '';
+          document.getElementById('inqDate').value = '';
+          document.getElementById('inqMessage').value = '';
+          document.getElementById('inquirySuccess').style.display = 'none';
+          document.getElementById('inquiryError').style.display = 'none';
+          document.getElementById('inquiryModal').style.display = 'block';
+        };
+        
+        // Set up message button if user is logged in and not owner
+        const messageBtn = document.getElementById('modalMessageBtn');
+        const isOwner = currentUserId && room.user_id == currentUserId;
+        if (!isOwner && currentUserId) {
+          messageBtn.href = `messages.php?user_id=${room.user_id}&room_id=${room.id}`;
+          messageBtn.style.display = 'flex';
+        } else {
+          messageBtn.style.display = 'none';
+        }
+        
+        // Show modal
         document.getElementById('roomModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
       }
     });
   });
@@ -578,8 +1009,45 @@ function handleSearch(e){
 }
 
 // Modal Close
-document.getElementById('modalClose').onclick = ()=>{ document.getElementById('roomModal').style.display='none'; };
-document.getElementById('inquiryModalClose').onclick = ()=>{ document.getElementById('inquiryModal').style.display='none'; };
+document.getElementById('modalClose').onclick = function() {
+  document.getElementById('roomModal').style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+document.getElementById('inquiryModalClose').onclick = function() {
+  document.getElementById('inquiryModal').style.display = 'none';
+  document.body.style.overflow = '';
+};
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+  const roomModal = document.getElementById('roomModal');
+  const inquiryModal = document.getElementById('inquiryModal');
+  if (event.target == roomModal) {
+    roomModal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+  if (event.target == inquiryModal) {
+    inquiryModal.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+};
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const roomModal = document.getElementById('roomModal');
+    const inquiryModal = document.getElementById('inquiryModal');
+    if (roomModal.style.display === 'block') {
+      roomModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+    if (inquiryModal.style.display === 'block') {
+      inquiryModal.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+  }
+});
 
 // Inquiry Form Submission
 document.getElementById('inquiryForm').addEventListener('submit', async function(e) {
