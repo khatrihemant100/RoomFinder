@@ -35,8 +35,8 @@ if ($conn->connect_error) {
     exit;
 }
 
-// Get POST data
-$room_id = intval($_POST['room_id'] ?? 0);
+// Get POST data (frontend uses room_id, but we map to property_id in database)
+$property_id = intval($_POST['room_id'] ?? 0);
 $name = trim($_POST['name'] ?? '');
 $email = trim($_POST['email'] ?? '');
 $phone = trim($_POST['phone'] ?? '');
@@ -44,7 +44,7 @@ $visit_date = $_POST['visit_date'] ?? '';
 $message = trim($_POST['message'] ?? '');
 
 // Validation
-if (empty($room_id) || empty($name) || empty($email) || empty($phone) || empty($visit_date)) {
+if (empty($property_id) || empty($name) || empty($email) || empty($phone) || empty($visit_date)) {
     ob_end_clean();
     http_response_code(400);
     echo json_encode(['success' => false, 'error' => 'All fields are required']);
@@ -73,7 +73,7 @@ if (!$checkStmt) {
     exit;
 }
 
-$checkStmt->bind_param("i", $room_id);
+$checkStmt->bind_param("i", $property_id);
 if (!$checkStmt->execute()) {
     ob_end_clean();
     http_response_code(500);
@@ -114,7 +114,7 @@ if ($tableCheck->num_rows === 0) {
 }
 
 // Insert inquiry
-$stmt = $conn->prepare("INSERT INTO inquiries (room_id, name, email, phone, visit_date, message) VALUES (?, ?, ?, ?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO inquiries (property_id, name, email, phone, visit_date, message) VALUES (?, ?, ?, ?, ?, ?)");
 if (!$stmt) {
     http_response_code(500);
     ob_end_clean();
@@ -125,7 +125,7 @@ if (!$stmt) {
     exit;
 }
 
-$stmt->bind_param("isssss", $room_id, $name, $email, $phone, $visit_date, $message);
+$stmt->bind_param("isssss", $property_id, $name, $email, $phone, $visit_date, $message);
 
 if ($stmt->execute()) {
     // Inquiry saved successfully - Now send email to room owner
@@ -134,7 +134,7 @@ if ($stmt->execute()) {
     
     // Check if owner email exists
     if (empty($room['owner_email'])) {
-        error_log("Warning: Room owner email not found for room ID: " . $room_id);
+        error_log("Warning: Room owner email not found for property ID: " . $property_id);
         $emailError = "Room owner email not found in database";
     } else {
         // Owner email found - send email

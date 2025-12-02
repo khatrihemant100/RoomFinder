@@ -15,7 +15,7 @@ $sender_id = $_SESSION["user_id"];
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $receiver_id = isset($_POST["receiver_id"]) ? (int)$_POST["receiver_id"] : 0;
     $message = isset($_POST["message"]) ? trim($_POST["message"]) : '';
-    $room_id = isset($_POST["room_id"]) ? (int)$_POST["room_id"] : null;
+    $property_id = isset($_POST["room_id"]) ? (int)$_POST["room_id"] : null; // Frontend uses room_id, map to property_id
     $subject = isset($_POST["subject"]) ? trim($_POST["subject"]) : null;
     
     if (empty($receiver_id) || empty($message)) {
@@ -42,8 +42,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $checkStmt->close();
     
     // Insert message
-    $stmt = $conn->prepare("INSERT INTO messages (sender_id, receiver_id, room_id, subject, message) VALUES (?, ?, ?, ?, ?)");
-    $stmt->bind_param("iiiss", $sender_id, $receiver_id, $room_id, $subject, $message);
+    $stmt = $conn->prepare("INSERT INTO messages (sender_id, receiver_id, property_id, subject, message) VALUES (?, ?, ?, ?, ?)");
+    $stmt->bind_param("iiiss", $sender_id, $receiver_id, $property_id, $subject, $message);
     
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'message_id' => $conn->insert_id]);
