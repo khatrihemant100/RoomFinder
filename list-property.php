@@ -6,10 +6,10 @@ if (!isset($_SESSION["user_id"]) || !isset($_SESSION["role"]) || $_SESSION["role
     exit();
 }
 
+require_once 'db.php';
+
 $msg = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conn = new mysqli("localhost", "root", "", "roomfinder");
-    if ($conn->connect_error) die("DB error");
 
     $title = $_POST['room-title'];
     $location = $_POST['room-location'];
@@ -18,8 +18,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $desc = $_POST['room-description'];
     $train_station = $_POST['room-train-station'];
     $status = $_POST['room-status'];
-    
-
     
     $user_id = $_SESSION["user_id"];
 

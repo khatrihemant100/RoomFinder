@@ -1,11 +1,6 @@
 <?php
 session_start();
-$conn = new mysqli("localhost", "root", "", "roomfinder");
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once 'db.php';
 
 // API fetch for search (optional)
 if (isset($_GET['api']) && $_GET['api'] == '1') {

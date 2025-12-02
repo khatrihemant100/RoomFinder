@@ -5,8 +5,8 @@ if (!isset($_SESSION["user_id"])) {
     exit();
 }
 
-$conn = new mysqli("localhost", "root", "", "roomfinder");
-if ($conn->connect_error) die("DB error");
+require_once 'db.php';
+
 
 $id = intval($_GET['id'] ?? 0);
 $user_id = $_SESSION["user_id"];

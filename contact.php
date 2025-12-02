@@ -1,9 +1,8 @@
 <?php
 session_start();
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $conn = new mysqli("localhost", "root", "", "roomfinder");
-    if ($conn->connect_error) die("Connection failed: " . $conn->connect_error);
+require_once 'db.php';
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST['name'];
     $email = $_POST['email'];
     $message = $_POST['message'];
