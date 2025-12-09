@@ -1,4 +1,5 @@
 <?php
+
 session_start();
 require 'db.php';
 
@@ -317,22 +318,35 @@ $unreadStmt->close();
                             </div>
                         </div>
 
-                        <!-- Messages List -->
-                        <div class="flex-1 overflow-y-auto p-4 space-y-4" id="messagesContainer">
-                            <?php foreach ($messages as $msg): ?>
-                                <div class="flex <?php echo ($msg['sender_id'] == $user_id) ? 'justify-end' : 'justify-start'; ?>">
-                                    <div class="message-bubble message-<?php echo ($msg['sender_id'] == $user_id) ? 'sent' : 'received'; ?> px-4 py-2">
-                                        <?php if ($msg['sender_id'] != $user_id): ?>
-                                            <div class="text-xs font-semibold mb-1"><?php echo htmlspecialchars($msg['sender_name']); ?></div>
-                                        <?php endif; ?>
-                                        <p><?php echo nl2br(htmlspecialchars($msg['message'])); ?></p>
-                                        <div class="text-xs mt-1 opacity-75">
-                                            <?php echo date('M j, g:i A', strtotime($msg['created_at'])); ?>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
+                 <!-- Messages List -->
+<div class="flex-1 overflow-y-auto p-4 space-y-4" id="messagesContainer">
+    <?php if (!empty($messages)): ?>
+        <?php foreach ($messages as $msg): ?>
+            <div class="flex <?php echo ($msg['sender_id'] == $user_id) ? 'justify-end' : 'justify-start'; ?>">
+
+                <div class="message-bubble message-<?php echo ($msg['sender_id'] == $user_id) ? 'sent' : 'received'; ?> px-4 py-2">
+
+                    <?php if ($msg['sender_id'] != $user_id): ?>
+                        <div class="text-xs font-semibold mb-1">
+                            <?php echo htmlspecialchars($msg['sender_name']); ?>
                         </div>
+                    <?php endif; ?>
+
+                    <p><?php echo nl2br(htmlspecialchars($msg['message'])); ?></p>
+
+                    <div class="text-xs mt-1 opacity-75">
+                        <?php echo date('M j, g:i A', strtotime($msg['created_at'])); ?>
+                    </div>
+
+                </div>
+
+            </div>
+        <?php endforeach; ?>
+    <?php else: ?>
+        <p class="text-gray-400 text-center">No messages yet.</p>
+    <?php endif; ?>
+</div>
+
 
                         <!-- Message Input -->
                         <div class="p-4 border-t border-gray-200 bg-white">
@@ -453,6 +467,9 @@ $unreadStmt->close();
             }
         });
     </script>
+   
 </body>
+
 </html>
+
 
