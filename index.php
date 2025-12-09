@@ -630,7 +630,7 @@
                     <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
                         <a href="list-property.php" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap" data-i18n="list_property_btn">List Your Property</a>
                     <?php else: ?>
-                        <button onclick="showRegisterNotification()" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap" data-i18n="register_owner">Register as Room Owner</button>
+                        <button onclick="showRegisterNotification()" class="px-6 py-3 border border-primary text-primary rounded-button text-center hover:bg-gray-50 transition-colors whitespace-nowrap" data-i18n="register_owner">List Your Property</button>
                     <?php endif; ?>
                 </div>
                 
