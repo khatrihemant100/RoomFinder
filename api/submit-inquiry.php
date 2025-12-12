@@ -24,7 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-$conn = new mysqli("localhost", "root", "", "roomfinder");
+// $conn = new mysqli("localhost", "root", "", "roomfinder");
+require_once __DIR__ . '/../db.php';
 if ($conn->connect_error) {
     ob_end_clean();
     http_response_code(500);
