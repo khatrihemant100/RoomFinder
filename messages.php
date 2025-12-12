@@ -260,10 +260,8 @@ $unreadStmt->close();
                                         <div class="flex items-center justify-between">
                                             <div class="flex items-center gap-2">
                                                 <h3 class="font-semibold text-gray-900 truncate"><?php echo htmlspecialchars($conv['other_user_name']); ?></h3>
-                                                <?php if (isset($conv['other_user_verified']) && $conv['other_user_verified'] && $conv['other_user_role'] === 'owner'): ?>
-                                                    <span class="px-1.5 py-0.5 bg-green-500 text-white rounded-full text-xs flex items-center" title="Verified Owner">
-                                                        <i class="ri-shield-check-fill text-xs"></i>
-                                                    </span>
+                                                <?php if (isset($conv['other_user_verified']) && $conv['other_user_verified'] == 1 && $conv['other_user_role'] === 'owner'): ?>
+                                                    <i class="ri-checkbox-circle-fill text-blue-500" style="font-size:16px;" title="Verified Owner"></i>
                                                 <?php endif; ?>
                                             </div>
                                             <?php if ($conv['last_message_time']): ?>
@@ -300,10 +298,8 @@ $unreadStmt->close();
                                     <div>
                                         <div class="flex items-center gap-2">
                                             <h3 class="font-semibold"><?php echo htmlspecialchars($selected_user['name']); ?></h3>
-                                            <?php if ($selected_user['role'] === 'owner' && $selected_user['is_verified']): ?>
-                                                <span class="px-2 py-0.5 bg-green-500 text-white rounded-full text-xs font-semibold flex items-center gap-1" title="Verified Owner">
-                                                    <i class="ri-shield-check-fill"></i>
-                                                </span>
+                                            <?php if ($selected_user['role'] === 'owner' && $selected_user['is_verified'] == 1): ?>
+                                                <i class="ri-checkbox-circle-fill text-blue-500" style="font-size:18px;" title="Verified Owner"></i>
                                             <?php endif; ?>
                                         </div>
                                         <p class="text-sm text-gray-500"><?php echo ucfirst($selected_user['role']); ?></p>

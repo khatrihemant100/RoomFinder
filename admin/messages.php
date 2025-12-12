@@ -5,8 +5,16 @@ require 'auth.php';
 if (isset($_GET['action']) && $_GET['action'] === 'delete') {
     $message_id = intval($_GET['id'] ?? 0);
     if ($message_id > 0) {
-        $conn->query("DELETE FROM messages WHERE id = $message_id");
-        $conn->query("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES ({$_SESSION['admin_id']}, 'delete_message', 'message', $message_id, 'Message deleted')");
+        $deleteStmt = $conn->prepare("DELETE FROM messages WHERE id = ?");
+        $deleteStmt->bind_param("i", $message_id);
+        $deleteStmt->execute();
+        $deleteStmt->close();
+        
+        $logStmt = $conn->prepare("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES (?, 'delete_message', 'message', ?, 'Message deleted')");
+        $logStmt->bind_param("ii", $_SESSION['admin_id'], $message_id);
+        $logStmt->execute();
+        $logStmt->close();
+        
         header("Location: messages.php");
         exit();
     }
@@ -29,7 +37,7 @@ $messages = $conn->query("
     FROM messages m
     LEFT JOIN users s ON m.sender_id = s.id
     LEFT JOIN users r ON m.receiver_id = r.id
-    LEFT JOIN properties p ON m.property_id = p.id
+    LEFT JOIN properties p ON m.room_id = p.id
     ORDER BY m.created_at DESC
     LIMIT $per_page OFFSET $offset
 ");

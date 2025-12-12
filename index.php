@@ -650,12 +650,49 @@
                   </form>
                 </div>
                 
-                <!-- Modal/Dialog for search results -->
-                <div id="search-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.3);align-items:center;justify-content:center;">
-                  <div style="background:#fff;max-width:600px;width:95vw;padding:24px 16px;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);position:relative;">
-                    <button id="close-modal" style="position:absolute;top:12px;right:16px;font-size:1.5rem;background:none;border:none;cursor:pointer;">&times;</button>
-                    <h3 style="font-size:1.3rem;font-weight:bold;margin-bottom:12px;">Search Results</h3>
-                    <div id="modal-results"></div>
+                <!-- Enhanced Modal/Dialog for search results -->
+                <div id="search-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:9999;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:20px;box-sizing:border-box;overflow:hidden;">
+                  <div id="modal-content-box" style="background:#fff;max-width:900px;width:100%;height:85vh;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;display:flex;flex-direction:column;overflow:hidden;margin:auto;">
+                    <!-- Modal Header -->
+                    <div id="modal-header" style="background:linear-gradient(135deg, #4A90E2 0%, #5B9BD5 100%);padding:20px 24px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid rgba(255,255,255,0.1);flex-shrink:0;min-height:80px;box-sizing:border-box;">
+                      <div>
+                        <h3 style="font-size:1.5rem;font-weight:bold;color:#fff;margin:0;display:flex;align-items:center;gap:10px;">
+                          <i class="ri-search-line"></i> Search Results
+                        </h3>
+                        <p id="results-count" style="color:rgba(255,255,255,0.9);margin:4px 0 0 0;font-size:0.9rem;"></p>
+                      </div>
+                      <button id="close-modal" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.5rem;transition:all 0.3s;flex-shrink:0;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        <i class="ri-close-line"></i>
+                      </button>
+                    </div>
+                    
+                    <!-- Filters Section -->
+                    <div id="modal-filters" style="padding:16px 24px;background:#f8f9fa;border-bottom:1px solid #e9ecef;display:none;flex-shrink:0;box-sizing:border-box;">
+                      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+                        <div>
+                          <label style="display:block;font-size:0.85rem;color:#666;margin-bottom:4px;font-weight:500;">Sort By</label>
+                          <select id="sort-filter" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;">
+                            <option value="newest">Newest First</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                            <option value="name">Name A-Z</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label style="display:block;font-size:0.85rem;color:#666;margin-bottom:4px;font-weight:500;">Max Price</label>
+                          <input type="number" id="price-filter" placeholder="Any" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;">
+                        </div>
+                        <div>
+                          <label style="display:block;font-size:0.85rem;color:#666;margin-bottom:4px;font-weight:500;">Room Type</label>
+                          <input type="text" id="type-filter" placeholder="Any" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:8px;font-size:0.9rem;">
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <!-- Results Container -->
+                    <div id="modal-results" style="flex:1;overflow-y:auto;overflow-x:hidden;padding:20px 24px;min-height:0;box-sizing:border-box;-webkit-overflow-scrolling:touch;">
+                      <!-- Results will be inserted here -->
+                    </div>
                   </div>
                 </div>
                 
@@ -1162,48 +1199,286 @@
     </script>
 
 <script>
-// Location search modal (as before)
+// Enhanced Location search modal with filters and better design
+let allSearchResults = [];
+let filteredResults = [];
+
 document.getElementById('location-search-form').onsubmit = async function(e) {
   e.preventDefault();
   const location = document.getElementById('location-input').value.trim();
   if (!location) return;
   const modal = document.getElementById('search-modal');
   const resultsDiv = document.getElementById('modal-results');
-  resultsDiv.innerHTML = '<div style="text-align:center;padding:24px;">Searching...</div>';
+  const filtersDiv = document.getElementById('modal-filters');
+  const resultsCount = document.getElementById('results-count');
+  
+  // Prevent body scroll when modal is open
+  document.body.style.overflow = 'hidden';
+  
+  // Show loading state
+  resultsDiv.innerHTML = `
+    <div style="text-align:center;padding:60px 20px;">
+      <div style="display:inline-block;width:50px;height:50px;border:4px solid #f3f3f3;border-top:4px solid #4A90E2;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:16px;"></div>
+      <p style="color:#666;font-size:1.1rem;margin:0;">Searching for rooms in <strong>${location}</strong>...</p>
+    </div>
+  `;
   modal.style.display = 'flex';
+  filtersDiv.style.display = 'none';
 
   // Fetch rooms from API
   try {
     const res = await fetch('find-rooms.php?api=1&location=' + encodeURIComponent(location));
     const rooms = await res.json();
+    allSearchResults = rooms;
+    filteredResults = [...rooms];
+    
     if (rooms.length === 0) {
-      resultsDiv.innerHTML = '<div style="text-align:center;padding:24px;">No rooms found for <b>' + location + '</b>.</div>';
-    } else {
-      resultsDiv.innerHTML = rooms.map(room => `
-        <div style="border-bottom:1px solid #eee;padding:12px 0;display:flex;gap:12px;align-items:flex-start;">
-          <img src="${room.image ? room.image : 'no-image.png'}" alt="Room Image" style="width:90px;height:70px;object-fit:cover;border-radius:8px;">
-          <div style="flex:1;">
-            <div style="font-weight:bold;font-size:1.1rem;">${room.title || ''}</div>
-            <div style="color:#4A90E2;">${room.location || ''}</div>
-            <div>Type: ${room.type || ''}</div>
-            <div>Rent: ${room.price ? '¥' + room.price : ''}</div>
-            <div style="margin-top:4px;">
-              <a href="find-rooms.php?id=${room.id}" style="color:#4A90E2;text-decoration:underline;">View Details</a>
-            </div>
+      resultsDiv.innerHTML = `
+        <div style="text-align:center;padding:60px 20px;">
+          <div style="font-size:4rem;color:#ddd;margin-bottom:16px;">
+            <i class="ri-search-line"></i>
           </div>
+          <h4 style="font-size:1.3rem;color:#333;margin-bottom:8px;">No rooms found</h4>
+          <p style="color:#666;margin:0;">We couldn't find any rooms in <strong>${location}</strong>. Try searching for a different location.</p>
         </div>
-      `).join('');
+      `;
+      resultsCount.textContent = '0 results found';
+    } else {
+      filtersDiv.style.display = 'block';
+      displaySearchResults(rooms);
+      resultsCount.textContent = `${rooms.length} result${rooms.length !== 1 ? 's' : ''} found`;
+      
+      // Recalculate height after filters are shown
+      setTimeout(() => {
+        recalculateModalHeight();
+      }, 200);
     }
   } catch (err) {
-    resultsDiv.innerHTML = '<div style="color:red;">Error fetching rooms.</div>';
+    resultsDiv.innerHTML = `
+      <div style="text-align:center;padding:60px 20px;color:#e74c3c;">
+        <div style="font-size:3rem;margin-bottom:16px;"><i class="ri-error-warning-line"></i></div>
+        <h4 style="font-size:1.2rem;margin-bottom:8px;">Error loading results</h4>
+        <p style="color:#666;">Please try again later.</p>
+      </div>
+    `;
+    resultsCount.textContent = 'Error';
   }
 };
-document.getElementById('close-modal').onclick = function() {
-  document.getElementById('search-modal').style.display = 'none';
-};
+
+function displaySearchResults(rooms) {
+  const resultsDiv = document.getElementById('modal-results');
+  const resultsCount = document.getElementById('results-count');
+  
+  // Reset scroll position
+  resultsDiv.scrollTop = 0;
+  
+  if (rooms.length === 0) {
+    resultsDiv.innerHTML = `
+      <div style="text-align:center;padding:40px 20px;">
+        <p style="color:#666;">No rooms match your filters. Try adjusting your search criteria.</p>
+      </div>
+    `;
+    resultsCount.textContent = '0 results found';
+    return;
+  }
+  
+  resultsCount.textContent = `${rooms.length} result${rooms.length !== 1 ? 's' : ''} found`;
+  
+  // Force recalculation of height
+  setTimeout(() => {
+    recalculateModalHeight();
+  }, 100);
+  
+  resultsDiv.innerHTML = rooms.map(room => {
+    // Fix: Use image_url instead of image, and handle both cases
+    let imageUrl = '';
+    if (room.image_url) {
+      // If image_url already contains 'uploads/', use as is, otherwise add it
+      imageUrl = room.image_url.startsWith('uploads/') ? room.image_url : `uploads/${room.image_url}`;
+    } else if (room.image) {
+      // Fallback to image field if image_url doesn't exist
+      imageUrl = room.image.startsWith('uploads/') ? room.image : `uploads/${room.image}`;
+    } else {
+      imageUrl = 'https://via.placeholder.com/300x200?text=No+Image';
+    }
+    
+    const verifiedBadge = (room.is_verified == 1 && room.owner_role === 'owner') 
+      ? '<i class="ri-checkbox-circle-fill" style="color:#4A90E2;font-size:18px;margin-left:6px;" title="Verified Owner"></i>' 
+      : '';
+    
+    return `
+      <div style="background:#fff;border:1px solid #e9ecef;border-radius:12px;padding:16px;margin-bottom:16px;transition:all 0.3s;cursor:pointer;display:flex;gap:16px;box-shadow:0 2px 4px rgba(0,0,0,0.05);" 
+           onmouseover="this.style.boxShadow='0 4px 12px rgba(0,0,0,0.1)';this.style.transform='translateY(-2px)'" 
+           onmouseout="this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)';this.style.transform=''"
+           onclick="window.location.href='find-rooms.php?id=${room.id}'">
+        <div style="flex-shrink:0;width:220px;height:160px;border-radius:12px;overflow:hidden;background:linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);position:relative;box-shadow:0 4px 12px rgba(0,0,0,0.15);border:2px solid #e9ecef;">
+          <img src="${imageUrl}" alt="${room.title || 'Room'}" 
+               style="width:100%;height:100%;object-fit:cover;transition:transform 0.4s ease;display:block;cursor:pointer;"
+               onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300/4A90E2/ffffff?text=No+Image+Available';this.style.objectFit='contain';this.style.padding='20px';"
+               onmouseover="this.style.transform='scale(1.1)'"
+               onmouseout="this.style.transform='scale(1)'"
+               loading="lazy">
+          ${room.price ? `
+          <div style="position:absolute;top:8px;right:8px;background:rgba(74,144,226,0.95);color:#fff;padding:6px 12px;border-radius:20px;font-weight:bold;font-size:0.85rem;box-shadow:0 2px 8px rgba(0,0,0,0.2);backdrop-filter:blur(5px);">
+            ¥${parseInt(room.price).toLocaleString()}
+          </div>
+          ` : ''}
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:space-between;">
+          <div>
+            <div style="display:flex;align-items:center;margin-bottom:8px;">
+              <h4 style="font-size:1.2rem;font-weight:bold;color:#333;margin:0;flex:1;">${room.title || 'Untitled Room'}</h4>
+              ${verifiedBadge}
+            </div>
+            <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px;flex-wrap:wrap;">
+              <div style="display:flex;align-items:center;color:#4A90E2;font-size:0.95rem;">
+                <i class="ri-map-pin-line" style="margin-right:4px;"></i>
+                <span>${room.location || 'Location not specified'}</span>
+              </div>
+              ${room.train_station ? `
+              <div style="display:flex;align-items:center;color:#666;font-size:0.9rem;">
+                <i class="ri-train-line" style="margin-right:4px;"></i>
+                <span>${room.train_station}</span>
+              </div>
+              ` : ''}
+            </div>
+            <div style="display:flex;align-items:center;gap:20px;margin-bottom:12px;flex-wrap:wrap;">
+              ${room.type ? `
+              <div style="display:flex;align-items:center;color:#666;font-size:0.9rem;background:#f0f7ff;padding:4px 10px;border-radius:6px;">
+                <i class="ri-home-line" style="margin-right:4px;color:#4A90E2;"></i>
+                <span>${room.type}</span>
+              </div>
+              ` : ''}
+            </div>
+            ${room.description ? `
+            <p style="color:#666;font-size:0.9rem;margin:0;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+              ${room.description}
+            </p>
+            ` : ''}
+          </div>
+          <div style="margin-top:12px;display:flex;gap:8px;">
+            <a href="find-rooms.php?id=${room.id}" 
+               style="padding:8px 16px;background:#4A90E2;color:#fff;border-radius:8px;text-decoration:none;font-size:0.9rem;font-weight:500;transition:all 0.3s;"
+               onmouseover="this.style.background='#357ABD'"
+               onmouseout="this.style.background='#4A90E2'">
+              <i class="ri-eye-line" style="margin-right:4px;"></i>View Details
+            </a>
+            ${room.user_id ? `
+            <a href="messages.php?user_id=${room.user_id}&room_id=${room.id}" 
+               style="padding:8px 16px;background:#fff;color:#4A90E2;border:1px solid #4A90E2;border-radius:8px;text-decoration:none;font-size:0.9rem;font-weight:500;transition:all 0.3s;"
+               onmouseover="this.style.background='#f0f7ff'"
+               onmouseout="this.style.background='#fff'">
+              <i class="ri-message-3-line" style="margin-right:4px;"></i>Message
+            </a>
+            ` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Function to recalculate modal results height
+function recalculateModalHeight() {
+  const modalBox = document.getElementById('modal-content-box');
+  const header = document.getElementById('modal-header');
+  const filters = document.getElementById('modal-filters');
+  const results = document.getElementById('modal-results');
+  
+  if (modalBox && header && results) {
+    const headerHeight = header.offsetHeight;
+    const filtersHeight = filters && filters.style.display !== 'none' ? filters.offsetHeight : 0;
+    const availableHeight = modalBox.offsetHeight - headerHeight - filtersHeight;
+    results.style.maxHeight = availableHeight + 'px';
+    results.style.height = availableHeight + 'px';
+  }
+}
+
+// Filter and Sort functionality
+document.getElementById('sort-filter')?.addEventListener('change', function() {
+  applyFilters();
+});
+
+document.getElementById('price-filter')?.addEventListener('input', function() {
+  applyFilters();
+});
+
+document.getElementById('type-filter')?.addEventListener('input', function() {
+  applyFilters();
+});
+
+// Recalculate on window resize
+window.addEventListener('resize', function() {
+  const modal = document.getElementById('search-modal');
+  if (modal && modal.style.display === 'flex') {
+    recalculateModalHeight();
+  }
+});
+
+function applyFilters() {
+  const sortBy = document.getElementById('sort-filter')?.value || 'newest';
+  const maxPrice = parseInt(document.getElementById('price-filter')?.value) || Infinity;
+  const roomType = document.getElementById('type-filter')?.value.toLowerCase().trim() || '';
+  
+  filteredResults = allSearchResults.filter(room => {
+    const priceMatch = !room.price || parseInt(room.price) <= maxPrice;
+    const typeMatch = !roomType || (room.type && room.type.toLowerCase().includes(roomType));
+    return priceMatch && typeMatch;
+  });
+  
+  // Sort results
+  filteredResults.sort((a, b) => {
+    switch(sortBy) {
+      case 'price-low':
+        return (parseInt(a.price) || 0) - (parseInt(b.price) || 0);
+      case 'price-high':
+        return (parseInt(b.price) || 0) - (parseInt(a.price) || 0);
+      case 'name':
+        return (a.title || '').localeCompare(b.title || '');
+      case 'newest':
+      default:
+        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+    }
+  });
+  
+  displaySearchResults(filteredResults);
+}
+
+// Close modal function
+function closeSearchModal() {
+  const modal = document.getElementById('search-modal');
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+// Close modal
+document.getElementById('close-modal').onclick = closeSearchModal;
+
 document.getElementById('search-modal').onclick = function(e) {
-  if (e.target === this) this.style.display = 'none';
+  if (e.target === this) {
+    closeSearchModal();
+  }
 };
+
+// Close on Escape key
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const modal = document.getElementById('search-modal');
+    if (modal && modal.style.display === 'flex') {
+      closeSearchModal();
+    }
+  }
+});
+
+// Add CSS animation for spinner
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+`;
+document.head.appendChild(style);
 
 // Register as Room Owner notification functions with smooth animations
 function showRegisterNotification() {

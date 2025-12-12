@@ -7,7 +7,11 @@ if (isset($_GET['api']) && $_GET['api'] == '1') {
     $location = isset($_GET['location']) ? trim($_GET['location']) : '';
     $rooms = [];
     if ($location !== '') {
-        $stmt = $conn->prepare("SELECT * FROM properties WHERE location LIKE ? ORDER BY created_at DESC");
+        $stmt = $conn->prepare("SELECT p.*, u.is_verified, u.name as owner_name, u.role as owner_role 
+                                FROM properties p 
+                                LEFT JOIN users u ON p.user_id = u.id 
+                                WHERE p.location LIKE ? 
+                                ORDER BY p.created_at DESC");
         $like = '%' . $location . '%';
         $stmt->bind_param("s", $like);
         $stmt->execute();
@@ -22,7 +26,7 @@ if (isset($_GET['api']) && $_GET['api'] == '1') {
 
 // Fetch all rooms with owner verification status
 $rooms = [];
-$query = "SELECT p.*, u.is_verified, u.name as owner_name 
+$query = "SELECT p.*, u.is_verified, u.name as owner_name, u.role as owner_role 
           FROM properties p 
           LEFT JOIN users u ON p.user_id = u.id 
           ORDER BY p.created_at DESC";
@@ -852,11 +856,11 @@ function displayRooms(roomsArray) {
   <img src="${room.image_url}" alt="Room Image" style="width:100%;height:200px;object-fit:cover;border-radius:8px 8px 0 0;">
   <div class="rent-badge">¥${room.price ? room.price.toLocaleString() : ''}</div>
   <div class="status-badge ${statusClass}">${statusValue}</div>
-  ${room.is_verified ? '<div class="verified-badge" style="position:absolute;bottom:15px;right:15px;background:#2ecc71;color:white;padding:6px 12px;border-radius:20px;font-size:0.85rem;font-weight:600;box-shadow:0 3px 6px rgba(0,0,0,0.2);"><i class="ri-shield-check-fill"></i> Verified Owner</div>' : ''}
+  ${(room.is_verified == 1 && room.owner_role === 'owner') ? '<div class="verified-badge" style="position:absolute;bottom:15px;right:15px;background:#4A90E2;color:white;padding:8px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 6px rgba(0,0,0,0.2);"><i class="ri-checkbox-circle-fill" style="font-size:20px;"></i></div>' : ''}
 </div>
 <div class="card-content">
   <h4>${room.title || ''}</h4>
-  ${room.owner_name ? `<p class="flex items-center gap-2"><i class="fas fa-user text-blue-500"></i> <span>${room.owner_name}</span> ${room.is_verified ? '<span class="px-2 py-0.5 bg-green-500 text-white rounded-full text-xs font-semibold flex items-center gap-1"><i class="ri-shield-check-fill text-xs"></i> Verified</span>' : ''}</p>` : ''}
+  ${room.owner_name ? `<p class="flex items-center gap-2"><i class="fas fa-user text-blue-500"></i> <span>${room.owner_name}</span> ${(room.is_verified == 1 && room.owner_role === 'owner') ? '<i class="ri-checkbox-circle-fill text-blue-500" style="font-size:18px;" title="Verified Owner"></i>' : ''}</p>` : ''}
   <p><i class="fas fa-map-marker-alt"></i> ${room.location || ''}</p>
   <p><i class="fas fa-train"></i> ${room.train_station || ''}</p>
   <p><i class="fas fa-home"></i> ${room.type || ''}</p>
@@ -893,7 +897,7 @@ function displayRooms(roomsArray) {
             <div class="owner-badge">
               <i class="fas fa-user"></i>
               <span>${room.owner_name}</span>
-              ${room.is_verified ? '<i class="ri-shield-check-fill"></i> Verified Owner' : ''}
+              ${(room.is_verified == 1 && room.owner_role === 'owner') ? '<i class="ri-checkbox-circle-fill text-blue-500" style="font-size:20px;margin-left:8px;" title="Verified Owner"></i>' : ''}
             </div>
           `;
         } else {
@@ -1237,7 +1241,7 @@ function updateMapMarkers(roomsArray) {
               <h4 style="font-weight:bold;margin-bottom:8px;color:#4A90E2;">${room.title || 'Room'}</h4>
               <p style="margin:4px 0;color:#666;"><i class="fas fa-map-marker-alt"></i> ${room.location}</p>
               <p style="margin:4px 0;color:#666;"><i class="fas fa-yen-sign"></i> ¥${room.price ? room.price.toLocaleString() : 'N/A'}</p>
-              ${room.is_verified ? '<p style="margin:4px 0;color:#2ecc71;"><i class="ri-shield-check-fill"></i> Verified Owner</p>' : ''}
+              ${(room.is_verified == 1 && room.owner_role === 'owner') ? '<p style="margin:4px 0;color:#4A90E2;"><i class="ri-checkbox-circle-fill" style="font-size:18px;"></i></p>' : ''}
               <a href="find-rooms.php?id=${room.id}" style="display:inline-block;margin-top:8px;color:#4A90E2;text-decoration:underline;">View Details</a>
             </div>
           `

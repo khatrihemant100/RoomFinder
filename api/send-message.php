@@ -2,6 +2,8 @@
 session_start();
 require '../db.php';
 
+// Start output buffering to prevent any warnings/errors from corrupting JSON
+ob_start();
 header('Content-Type: application/json');
 
 // Check if user is logged in
@@ -42,17 +44,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $checkStmt->close();
     
     // Insert message
-    $stmt = $conn->prepare("INSERT INTO messages (sender_id, receiver_id, property_id, subject, message) VALUES (?, ?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO messages (sender_id, receiver_id, room_id, subject, message) VALUES (?, ?, ?, ?, ?)");
     $stmt->bind_param("iiiss", $sender_id, $receiver_id, $property_id, $subject, $message);
     
     if ($stmt->execute()) {
+        ob_end_clean(); // Clear any output before JSON
         echo json_encode(['success' => true, 'message_id' => $conn->insert_id]);
     } else {
-        echo json_encode(['success' => false, 'error' => 'Failed to send message']);
+        ob_end_clean(); // Clear any output before JSON
+        error_log("Database error in send-message.php: " . $stmt->error);
+        echo json_encode(['success' => false, 'error' => 'Failed to send message: ' . $stmt->error]);
     }
     
     $stmt->close();
 } else {
+    ob_end_clean();
     echo json_encode(['success' => false, 'error' => 'Invalid request method']);
 }
 ?>

@@ -9,17 +9,38 @@ if (isset($_GET['action'])) {
     if ($user_id > 0) {
         switch ($action) {
             case 'verify':
-                $conn->query("UPDATE users SET is_verified = 1 WHERE id = $user_id");
+                $updateStmt = $conn->prepare("UPDATE users SET is_verified = 1 WHERE id = ?");
+                $updateStmt->bind_param("i", $user_id);
+                $updateStmt->execute();
+                $updateStmt->close();
+                
                 // Log action
-                $conn->query("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES ({$_SESSION['admin_id']}, 'verify_user', 'user', $user_id, 'User verified')");
+                $logStmt = $conn->prepare("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES (?, 'verify_user', 'user', ?, 'User verified')");
+                $logStmt->bind_param("ii", $_SESSION['admin_id'], $user_id);
+                $logStmt->execute();
+                $logStmt->close();
                 break;
             case 'unverify':
-                $conn->query("UPDATE users SET is_verified = 0 WHERE id = $user_id");
-                $conn->query("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES ({$_SESSION['admin_id']}, 'unverify_user', 'user', $user_id, 'User verification removed')");
+                $updateStmt = $conn->prepare("UPDATE users SET is_verified = 0 WHERE id = ?");
+                $updateStmt->bind_param("i", $user_id);
+                $updateStmt->execute();
+                $updateStmt->close();
+                
+                $logStmt = $conn->prepare("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES (?, 'unverify_user', 'user', ?, 'User verification removed')");
+                $logStmt->bind_param("ii", $_SESSION['admin_id'], $user_id);
+                $logStmt->execute();
+                $logStmt->close();
                 break;
             case 'delete':
-                $conn->query("DELETE FROM users WHERE id = $user_id");
-                $conn->query("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES ({$_SESSION['admin_id']}, 'delete_user', 'user', $user_id, 'User deleted')");
+                $deleteStmt = $conn->prepare("DELETE FROM users WHERE id = ?");
+                $deleteStmt->bind_param("i", $user_id);
+                $deleteStmt->execute();
+                $deleteStmt->close();
+                
+                $logStmt = $conn->prepare("INSERT INTO admin_logs (admin_id, action, target_type, target_id, details) VALUES (?, 'delete_user', 'user', ?, 'User deleted')");
+                $logStmt->bind_param("ii", $_SESSION['admin_id'], $user_id);
+                $logStmt->execute();
+                $logStmt->close();
                 break;
         }
         header("Location: users.php");
