@@ -1078,28 +1078,33 @@ document.getElementById('inquiryForm').addEventListener('submit', async function
       body: formData
     });
     
-    // Check if response is ok
-    if (!res.ok) {
-      // Try to get error message from response
-      let errorText = '';
-      try {
-        const errorData = await res.json();
-        errorText = errorData.error || errorData.debug || '';
-      } catch (e) {
-        errorText = await res.text();
+    // Read response body once as text first, then parse as JSON
+    // This allows us to see the actual response if JSON parsing fails
+    const responseText = await res.text();
+    let data;
+    
+    // Try to parse as JSON
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      // JSON parsing failed - log the actual response for debugging
+      console.error("Failed to parse JSON response. Actual response:", responseText);
+      console.error("Parse error:", e);
+      
+      // Check if response is ok to provide better error message
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}. Server response: ${responseText.substring(0, 200)}`);
+      } else {
+        throw new Error("Server returned invalid JSON response: " + responseText.substring(0, 200));
       }
+    }
+    
+    // Check if response is ok (after reading the body)
+    if (!res.ok) {
+      // Extract error message from data
+      const errorText = data?.error || data?.debug || responseText || `HTTP ${res.status}`;
       throw new Error(`HTTP error! status: ${res.status}. ${errorText}`);
     }
-    
-    // Check if response is JSON
-    const contentType = res.headers.get("content-type");
-    if (!contentType || !contentType.includes("application/json")) {
-      const text = await res.text();
-      console.error("Non-JSON response:", text);
-      throw new Error("Server returned invalid response: " + text.substring(0, 100));
-    }
-    
-    const data = await res.json();
     
     if (data.success) {
       // Show success message with animation

@@ -1011,7 +1011,7 @@
                             S
                         </div>
                         <div>
-                            <h4 class="font-semibold">Sarah Johnson</h4>
+                            <h4 class="font-semibold"> Hemant&Aakash</h4>
                             <p class="text-sm text-gray-500">Room Seeker</p>
                         </div>
                     </div>
@@ -1031,7 +1031,7 @@
                             M
                         </div>
                         <div>
-                            <h4 class="font-semibold">Michael Chen</h4>
+                            <h4 class="font-semibold">Prabin</h4>
                             <p class="text-sm text-gray-500">Room Owner</p>
                         </div>
                     </div>
@@ -1051,7 +1051,7 @@
                             E
                         </div>
                         <div>
-                            <h4 class="font-semibold">Emily Rodriguez</h4>
+                            <h4 class="font-semibold">Khan Thu</h4>
                             <p class="text-sm text-gray-500">Room Seeker</p>
                         </div>
                     </div>

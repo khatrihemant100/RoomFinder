@@ -1,6 +1,9 @@
 <?php
 // Handle room inquiry submissions with email notification
-session_start();
+// Suppress session warnings to prevent output
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // Set error handling - enable for debugging
 error_reporting(E_ALL);
@@ -24,8 +27,15 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// $conn = new mysqli("localhost", "root", "", "roomfinder");
-require_once __DIR__ . '/../db.php';
+// Database connection - use direct connection to avoid die() in db.php breaking JSON
+// Suppress any output from env.php
+ob_start();
+require_once __DIR__ . '/../env.php';
+$envOutput = ob_get_clean();
+if (!empty($envOutput)) {
+    error_log("Warning: Output from env.php: " . $envOutput);
+}
+$conn = new mysqli(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT);
 if ($conn->connect_error) {
     ob_end_clean();
     http_response_code(500);
@@ -145,7 +155,13 @@ if ($stmt->execute()) {
                 $emailError = "Email system file not found";
                 error_log("Error: InquiryMailer.php not found at: " . $mailerPath);
             } else {
+                // Suppress any output from require
+                ob_start();
                 require_once $mailerPath;
+                $requireOutput = ob_get_clean();
+                if (!empty($requireOutput)) {
+                    error_log("Warning: Output from InquiryMailer.php: " . $requireOutput);
+                }
                 
                 // Verify class exists
                 if (!class_exists('InquiryMailer')) {
@@ -233,5 +249,3 @@ if ($stmt->execute()) {
 $stmt->close();
 $conn->close();
 exit;
-?>
-

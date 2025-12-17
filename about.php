@@ -197,25 +197,32 @@
                 </div>
                 
                 <div class="grid md:grid-cols-2 gap-8">
-                    <!-- Team Member 1: Hemant Khatri -->
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100">
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 ring-4 ring-blue-200">
-                                HK
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Hemant Khatri</h3>
-                            <p class="text-lg text-blue-600 mb-4 font-semibold">Web Page Design</p>
-                            <p class="text-gray-600 leading-relaxed mb-6">
-                                Responsible for designing and developing web pages using HTML, JavaScript, and PHP. Working on creating user-friendly interfaces and implementing frontend functionality.
-                            </p>
-                            <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">HTML</span>
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">JavaScript</span>
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">PHP</span>
-                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Web Design</span>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Team Member 1: Hemant Khatri -->
+<div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100">
+    <div class="flex flex-col items-center text-center">
+
+        <!-- Profile Photo -->
+        <div class="w-32 h-32 rounded-full overflow-hidden shadow-lg mb-6 ring-4 ring-blue-200">
+            <img src="uploads/hemant.png" class="w-full h-full object-cover" alt="Hemant Photo">
+        </div>
+
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Hemant Khatri</h3>
+        <p class="text-lg text-blue-600 mb-4 font-semibold">Web Page Design</p>
+
+        <p class="text-gray-600 leading-relaxed mb-6">
+            Responsible for designing and developing web pages using HTML, JavaScript, and PHP. Working on creating user-friendly interfaces and implementing frontend functionality.
+        </p>
+
+        <div class="flex flex-wrap gap-2 justify-center">
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">HTML</span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">JavaScript</span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">PHP</span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">Web Design</span>
+        </div>
+
+    </div>
+</div>
+
 
                     <!-- Team Member 2: Aakash Shrestha -->
                     <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-100">
@@ -243,7 +250,7 @@
                             <div class="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 ring-4 ring-purple-200">
                                 KT
                             </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Kan Tu</h3>
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2">KHANT THU</h3>
                             <p class="text-lg text-purple-600 mb-4 font-semibold">Database Integration</p>
                             <p class="text-gray-600 leading-relaxed mb-6">
                                 Responsible for database integration using MySQL and PHP. Working on connecting the application with the database, managing data storage, and ensuring smooth data flow.
