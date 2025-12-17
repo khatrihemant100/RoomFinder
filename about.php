@@ -224,66 +224,79 @@
 </div>
 
 
-                    <!-- Team Member 2: Aakash Shrestha -->
-                    <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-100">
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 ring-4 ring-green-200">
-                                AS
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Aakash Shrestha</h3>
-                            <p class="text-lg text-green-600 mb-4 font-semibold">Login Form & Room List Page</p>
-                            <p class="text-gray-600 leading-relaxed mb-6">
-                                Working on developing the login form, room list page, and CSS styling. Focused on creating clean and functional user interfaces for authentication and room browsing.
-                            </p>
-                            <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Login Form</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Room List</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">CSS</span>
-                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Frontend</span>
-                            </div>
-                        </div>
-                    </div>
+                 <div class="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-100">
+    <div class="flex flex-col items-center text-center">
 
-                    <!-- Team Member 3: Kan Tu -->
-                    <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-purple-100">
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 ring-4 ring-purple-200">
-                                KT
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">KHANT THU</h3>
-                            <p class="text-lg text-purple-600 mb-4 font-semibold">Database Integration</p>
-                            <p class="text-gray-600 leading-relaxed mb-6">
-                                Responsible for database integration using MySQL and PHP. Working on connecting the application with the database, managing data storage, and ensuring smooth data flow.
-                            </p>
-                            <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">MySQL</span>
-                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">PHP</span>
-                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Database</span>
-                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Backend</span>
-                            </div>
-                        </div>
-                    </div>
+        <div class="w-32 h-32 rounded-full overflow-hidden shadow-lg mb-6 ring-4 ring-green-200">
+            <img src="uploads/hemant.png" class="w-full h-full object-cover" alt="Aakash Photo">
+        </div>
 
-                    <!-- Team Member 4: Prabin Katwal -->
-                    <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-100">
-                        <div class="flex flex-col items-center text-center">
-                            <div class="w-32 h-32 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 ring-4 ring-orange-200">
-                                PK
-                            </div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-2">Prabin Katwal</h3>
-                            <p class="text-lg text-orange-600 mb-4 font-semibold">UI/UX Design & PHP</p>
-                            <p class="text-gray-600 leading-relaxed mb-6">
-                                Working on UI/UX design confirmation using Canva and PHP development. Focused on ensuring the design meets user experience standards and implementing design elements in the application.
-                            </p>
-                            <div class="flex flex-wrap gap-2 justify-center">
-                                <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">UI/UX</span>
-                                <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">Canva</span>
-                                <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">PHP</span>
-                                <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">Design</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Aakash Shrestha</h3>
+        <p class="text-lg text-green-600 mb-4 font-semibold">Login Form & Room List Page</p>
+
+        <p class="text-gray-600 leading-relaxed mb-6">
+            Working on developing the login form, room list page, and CSS styling. Focused on creating clean and functional user interfaces for authentication and room browsing.
+        </p>
+
+        <div class="flex flex-wrap gap-2 justify-center">
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Login Form</span>
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Room List</span>
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">CSS</span>
+            <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">Frontend</span>
+        </div>
+
+    </div>
+</div>
+
+
+                   <div class="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-purple-100">
+    <div class="flex flex-col items-center text-center">
+
+        <div class="w-32 h-32 rounded-full overflow-hidden shadow-lg mb-6 ring-4 ring-purple-200">
+            <img src="uploads/hemant.png" class="w-full h-full object-cover" alt="Khant Thu Photo">
+        </div>
+
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">KHANT THU</h3>
+        <p class="text-lg text-purple-600 mb-4 font-semibold">Database Integration</p>
+
+        <p class="text-gray-600 leading-relaxed mb-6">
+            Responsible for database integration using MySQL and PHP. Working on connecting the application with the database, managing data storage, and ensuring smooth data flow.
+        </p>
+
+        <div class="flex flex-wrap gap-2 justify-center">
+            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">MySQL</span>
+            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">PHP</span>
+            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Database</span>
+            <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">Backend</span>
+        </div>
+
+    </div>
+</div>
+
+                   <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-2xl p-8 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-100">
+    <div class="flex flex-col items-center text-center">
+
+        <div class="w-32 h-32 rounded-full overflow-hidden shadow-lg mb-6 ring-4 ring-orange-200">
+            <img src="uploads/hemant.png" class="w-full h-full object-cover" alt="Prabin Photo">
+        </div>
+
+        <h3 class="text-2xl font-bold text-gray-800 mb-2">Prabin Katwal</h3>
+        <p class="text-lg text-orange-600 mb-4 font-semibold">UI/UX Design & PHP</p>
+
+        <p class="text-gray-600 leading-relaxed mb-6">
+            Working on UI/UX design confirmation using Canva and PHP development. Focused on ensuring the design meets user experience standards and implementing design elements in the application.
+        </p>
+
+        <div class="flex flex-wrap gap-2 justify-center">
+            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">UI/UX</span>
+            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">Canva</span>
+            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">PHP</span>
+            <span class="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold">Design</span>
+        </div>
+
+    </div>
+</div>
+
 
                 <!-- Team Collaboration Note -->
                 <div class="mt-16 bg-gradient-to-br from-primary/10 via-purple-50 to-blue-50 rounded-3xl p-10 md:p-12 text-center border-2 border-primary/20 shadow-2xl relative overflow-hidden">
