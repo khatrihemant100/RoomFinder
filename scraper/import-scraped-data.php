@@ -11,8 +11,29 @@ require_once __DIR__ . '/../db.php';
 // Configuration
 // ============================================
 $dataFolder = __DIR__ . '/../data/';
-$defaultUserId = 1; // Default user ID for scraped properties
 $defaultStatus = 'available';
+
+// ============================================
+// Find or create a user for scraped properties
+// ============================================
+$userIdQuery = "SELECT id FROM users ORDER BY id ASC LIMIT 1";
+$result = $conn->query($userIdQuery);
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $defaultUserId = $row['id'];
+    echo "✅ Using existing user ID: $defaultUserId\n";
+} else {
+    // Create a system user for scraped properties if no users exist
+    $createUserQuery = "INSERT INTO users (name, email, password, role) 
+                        VALUES ('System', 'system@roomfinder.com', '', 'owner')";
+    if ($conn->query($createUserQuery)) {
+        $defaultUserId = $conn->insert_id;
+        echo "✅ Created system user with ID: $defaultUserId\n";
+    } else {
+        die("❌ Error: No users found and cannot create system user. Please create a user first.\n");
+    }
+}
+echo "\n";
 
 // Placeholder image - using a reliable placeholder service
 // You can also use a local default image: 'uploads/default-room.jpg'
