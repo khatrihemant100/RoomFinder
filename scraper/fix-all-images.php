@@ -40,8 +40,16 @@ $success = false;
 $updated = 0;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fix_all'])) {
-    // Get ALL properties (not just placeholder ones)
-    $query = "SELECT id, title, image_url FROM properties ORDER BY id";
+    // Get properties - ONLY update script-added images, NOT user-uploaded ones
+    // User-uploaded images are in "uploads/" folder
+    // Script images are from Unsplash or placeholder URLs
+    $query = "SELECT id, title, image_url FROM properties 
+              WHERE image_url LIKE '%placeholder%' 
+                 OR image_url LIKE '%via.placeholder%'
+                 OR image_url LIKE '%unsplash%'
+                 OR image_url = ''
+                 OR image_url IS NULL
+              ORDER BY id";
     $result = $conn->query($query);
     
     if (!$result) {
@@ -49,6 +57,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fix_all'])) {
     } else {
         $properties = [];
         while ($row = $result->fetch_assoc()) {
+            // Double check: skip if it's a user-uploaded image (in uploads/ folder)
+            $imgUrl = $row['image_url'] ?? '';
+            if (!empty($imgUrl) && strpos($imgUrl, 'uploads/') === 0) {
+                continue; // Skip user-uploaded images
+            }
             $properties[] = $row;
         }
         
@@ -60,6 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fix_all'])) {
             $stmt = $conn->prepare($updateQuery);
             
             $updated = 0;
+            $skipped = 0;
             $errors = 0;
             
             foreach ($properties as $index => $property) {
@@ -77,13 +91,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['fix_all'])) {
             $stmt->close();
             
             if ($updated > 0) {
-                $message = "✅ Successfully assigned different images to $updated rooms! Each room now has a unique image.";
+                $message = "✅ Successfully assigned different images to $updated rooms!<br>";
+                $message .= "ℹ️ User-uploaded images were preserved and not changed.";
                 $success = true;
             } else {
                 $message = "⚠️ No rooms were updated. Errors: $errors";
             }
         } else {
-            $message = "ℹ️ No rooms found in database.";
+            $message = "ℹ️ No rooms found with script-added images to update. All rooms have user-uploaded images.";
         }
     }
 }
@@ -93,9 +108,13 @@ $totalQuery = "SELECT COUNT(*) as total FROM properties";
 $result = $conn->query($totalQuery);
 $total = $result->fetch_assoc()['total'];
 
-// Check how many have same image
+// Check how many have same image (only script-added images)
 $sameImageQuery = "SELECT image_url, COUNT(*) as count FROM properties 
-                   WHERE image_url IS NOT NULL AND image_url != '' 
+                   WHERE image_url IS NOT NULL 
+                     AND image_url != '' 
+                     AND (image_url LIKE '%unsplash%' 
+                          OR image_url LIKE '%placeholder%'
+                          OR image_url NOT LIKE 'uploads/%')
                    GROUP BY image_url 
                    HAVING count > 1 
                    ORDER BY count DESC 
@@ -108,6 +127,21 @@ if ($result && $result->num_rows > 0) {
     $sameImageCount = $row['count'];
     $sameImageUrl = $row['image_url'];
 }
+
+// Count script-added images vs user-uploaded
+$scriptImagesQuery = "SELECT COUNT(*) as count FROM properties 
+                      WHERE image_url LIKE '%placeholder%' 
+                         OR image_url LIKE '%via.placeholder%'
+                         OR image_url LIKE '%unsplash%'
+                         OR image_url = ''
+                         OR image_url IS NULL";
+$result = $conn->query($scriptImagesQuery);
+$scriptImageCount = $result->fetch_assoc()['count'];
+
+$userImagesQuery = "SELECT COUNT(*) as count FROM properties 
+                     WHERE image_url LIKE 'uploads/%'";
+$result = $conn->query($userImagesQuery);
+$userImageCount = $result->fetch_assoc()['count'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -217,10 +251,18 @@ if ($result && $result->num_rows > 0) {
                 <strong><?php echo $total; ?></strong>
                 Total Rooms
             </div>
+            <div class="stat-box" style="border-left-color: #27ae60;">
+                <strong><?php echo $scriptImageCount; ?></strong>
+                Script-Added Images
+            </div>
+            <div class="stat-box" style="border-left-color: #4A90E2;">
+                <strong><?php echo $userImageCount; ?></strong>
+                User-Uploaded Images
+            </div>
             <?php if ($sameImageCount > 0): ?>
             <div class="stat-box" style="border-left-color: #ffc107;">
                 <strong><?php echo $sameImageCount; ?></strong>
-                Rooms with Same Image
+                Rooms with Same Script Image
             </div>
             <?php endif; ?>
         </div>
@@ -235,22 +277,30 @@ if ($result && $result->num_rows > 0) {
         
         <div class="info">
             <strong>What this will do:</strong><br>
-            • Update <strong>ALL</strong> rooms in the database<br>
-            • Assign a <strong>different image</strong> to each room<br>
+            • Update <strong>ONLY script-added images</strong> (placeholder, Unsplash URLs)<br>
+            • <strong>Preserve user-uploaded images</strong> - will NOT change them<br>
+            • Assign a <strong>different image</strong> to each room with script images<br>
             • Use high-quality room/apartment images from Unsplash<br>
             • Ensure maximum variety - each room gets unique image
         </div>
         
-        <form method="POST" onsubmit="return confirm('Are you sure you want to update ALL room images? This will change images for all ' + <?php echo $total; ?> + ' rooms.');">
+        <?php if ($scriptImageCount > 0): ?>
+        <form method="POST" onsubmit="return confirm('This will update <?php echo $scriptImageCount; ?> rooms with script-added images. User-uploaded images will be preserved. Continue?');">
             <button type="submit" name="fix_all" class="btn">
-                🔄 Fix All Images (Assign Different to Each Room)
+                🔄 Fix Script Images (Assign Different to Each Room)
             </button>
             <a href="update-images-menu.php" class="btn btn-secondary">← Back to Menu</a>
         </form>
+        <?php else: ?>
+        <div class="info">
+            All rooms have user-uploaded images. No script images to update.
+        </div>
+        <a href="update-images-menu.php" class="btn btn-secondary">← Back to Menu</a>
+        <?php endif; ?>
         
         <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 14px; color: #666;">
-            <strong>Note:</strong> This will update all rooms, even if they already have images. 
-            Each room will get a different image from the collection of 25+ room/apartment images.
+            <strong>⚠️ Important:</strong> This will <strong>ONLY</strong> update images that were added by scripts (placeholder URLs, Unsplash URLs). 
+            User-uploaded images in the <code>uploads/</code> folder will be <strong>preserved and NOT changed</strong>.
         </div>
     </div>
 </body>
