@@ -1,5 +1,21 @@
 <?php
  session_start(); 
+ require_once 'db.php';
+ 
+ // Fetch featured/latest rooms for homepage (limit 6-8)
+ $featuredRooms = [];
+ $featuredQuery = "SELECT p.*, u.is_verified, u.name as owner_name, u.role as owner_role 
+                   FROM properties p 
+                   LEFT JOIN users u ON p.user_id = u.id 
+                   WHERE p.status = 'available' OR p.status = ''
+                   ORDER BY p.created_at DESC 
+                   LIMIT 6";
+ $featuredResult = $conn->query($featuredQuery);
+ if ($featuredResult) {
+     while($row = $featuredResult->fetch_assoc()) {
+         $featuredRooms[] = $row;
+     }
+ }
 ?>
 <!DOCTYPE html>
 <html lang="">
@@ -30,6 +46,22 @@
     </script>
     <link rel="stylesheet" href="styles.css">
     
+
+<style>
+  /* Line clamp utility for text truncation */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>
 
 <style>
   /* AI Chat Button & Chat Window */
@@ -720,6 +752,85 @@
             </div>
         </div>
     </section>
+
+    <!-- Featured Rooms Section -->
+    <?php if (!empty($featuredRooms)): ?>
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4" data-i18n="featured_rooms">Featured Rooms</h2>
+                <p class="text-gray-600 max-w-2xl mx-auto" data-i18n="featured_rooms_desc">Discover some of our latest and most popular listings</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <?php foreach ($featuredRooms as $room): ?>
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 group">
+                    <div class="relative h-48 overflow-hidden bg-gray-200">
+                        <?php 
+                        $imageUrl = $room['image_url'] ?? '';
+                        if (empty($imageUrl)) {
+                            $imageUrl = 'https://via.placeholder.com/400x300/4A90E2/ffffff?text=No+Image';
+                        }
+                        ?>
+                        <img src="<?php echo htmlspecialchars($imageUrl); ?>" 
+                             alt="<?php echo htmlspecialchars($room['title'] ?? 'Room'); ?>" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                             onerror="this.src='https://via.placeholder.com/400x300/4A90E2/ffffff?text=No+Image'">
+                        <div class="absolute top-3 right-3 bg-primary text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                            ¥<?php echo number_format($room['price'] ?? 0); ?>
+                        </div>
+                        <?php if ($room['is_verified'] == 1 && $room['owner_role'] === 'owner'): ?>
+                        <div class="absolute top-3 left-3 bg-blue-500 text-white p-2 rounded-full shadow-lg" title="Verified Owner">
+                            <i class="ri-checkbox-circle-fill text-lg"></i>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-xl font-bold mb-2 text-gray-800 line-clamp-1">
+                            <?php echo htmlspecialchars($room['title'] ?? 'Untitled Room'); ?>
+                        </h3>
+                        <div class="flex items-center text-gray-600 mb-2">
+                            <i class="ri-map-pin-line mr-2 text-primary"></i>
+                            <span class="text-sm"><?php echo htmlspecialchars($room['location'] ?? 'Location not specified'); ?></span>
+                        </div>
+                        <?php if (!empty($room['train_station'])): ?>
+                        <div class="flex items-center text-gray-500 mb-3">
+                            <i class="ri-train-line mr-2"></i>
+                            <span class="text-sm"><?php echo htmlspecialchars($room['train_station']); ?></span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($room['type'])): ?>
+                        <div class="flex items-center mb-3">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-50 text-primary">
+                                <i class="ri-home-line mr-1"></i>
+                                <?php echo htmlspecialchars($room['type']); ?>
+                            </span>
+                        </div>
+                        <?php endif; ?>
+                        <?php if (!empty($room['description'])): ?>
+                        <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                            <?php echo htmlspecialchars(mb_substr($room['description'], 0, 100)); ?>
+                            <?php echo mb_strlen($room['description']) > 100 ? '...' : ''; ?>
+                        </p>
+                        <?php endif; ?>
+                        <a href="find-rooms.php?id=<?php echo $room['id']; ?>" 
+                           class="block w-full text-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors font-medium">
+                            View Details <i class="ri-arrow-right-line inline-block"></i>
+                        </a>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="find-rooms.php" 
+                   class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold">
+                    View All Rooms <i class="ri-arrow-right-line ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- नेपाली नोट: Role चयन सेसन (Owner/Seeker) -->
     <section class="py-16 bg-white">
