@@ -29,6 +29,10 @@
                 <i class="ri-settings-line"></i>
                 <span>Settings</span>
             </a>
+            <a href="manage-images.php" class="flex items-center space-x-3 px-4 py-3 <?php echo basename($_SERVER['PHP_SELF']) == 'manage-images.php' ? 'bg-blue-600' : 'hover:bg-gray-800'; ?> rounded-lg">
+                <i class="ri-image-edit-line"></i>
+                <span>Manage Images</span>
+            </a>
             <hr class="my-4 border-gray-700">
             <a href="../index.php" class="flex items-center space-x-3 px-4 py-3 hover:bg-gray-800 rounded-lg transition-colors">
                 <i class="ri-home-4-line"></i>
