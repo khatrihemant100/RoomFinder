@@ -33,20 +33,44 @@ $message = '';
 $success = false;
 $updated = 0;
 
+// Find scraper/system user ID (first user or user with name 'System')
+$scraperUserId = null;
+$systemUserQuery = "SELECT id FROM users WHERE name = 'System' OR email = 'system@roomfinder.com' LIMIT 1";
+$systemResult = $conn->query($systemUserQuery);
+if ($systemResult && $systemResult->num_rows > 0) {
+    $scraperUserId = $systemResult->fetch_assoc()['id'];
+} else {
+    // Fallback to first user ID
+    $firstUserQuery = "SELECT id FROM users ORDER BY id ASC LIMIT 1";
+    $firstResult = $conn->query($firstUserQuery);
+    if ($firstResult && $firstResult->num_rows > 0) {
+        $scraperUserId = $firstResult->fetch_assoc()['id'];
+    }
+}
+
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['assign_random'])) {
-        // Get properties - ONLY update script-added images, NOT user-uploaded ones
-        $query = "SELECT id FROM properties 
-                  WHERE image_url LIKE '%placeholder%' 
+        // Get properties - ONLY update script-added images from scraper user
+        // Skip user-uploaded images (in uploads/ folder)
+        $query = "SELECT id, image_url, user_id FROM properties 
+                  WHERE (image_url LIKE '%placeholder%' 
                      OR image_url LIKE '%via.placeholder%'
                      OR image_url LIKE '%unsplash%'
                      OR image_url = ''
-                     OR image_url IS NULL";
+                     OR image_url IS NULL)
+                  AND (image_url NOT LIKE 'uploads/%' OR image_url IS NULL OR image_url = '')";
+        
+        // If scraper user ID found, only update that user's properties
+        if ($scraperUserId !== null) {
+            $query .= " AND user_id = " . intval($scraperUserId);
+        }
+        
         $result = $conn->query($query);
         $properties = [];
         while ($row = $result->fetch_assoc()) {
             $imgUrl = $row['image_url'] ?? '';
+            // Double check: Skip user-uploaded images
             if (!empty($imgUrl) && strpos($imgUrl, 'uploads/') === 0) {
                 continue; // Skip user-uploaded images
             }
@@ -79,12 +103,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['update_all_single'])) {
         $newUrl = trim($_POST['image_url'] ?? '');
         if (!empty($newUrl)) {
+            // Build query - only update scraper user's properties
             $query = "UPDATE properties SET image_url = ? 
-                      WHERE image_url LIKE '%placeholder%' 
+                      WHERE (image_url LIKE '%placeholder%' 
                          OR image_url LIKE '%via.placeholder%'
                          OR image_url LIKE '%unsplash%'
                          OR image_url = ''
-                         OR image_url IS NULL";
+                         OR image_url IS NULL)
+                      AND (image_url NOT LIKE 'uploads/%' OR image_url IS NULL OR image_url = '')";
+            
+            // Add user_id filter if scraper user found
+            if ($scraperUserId !== null) {
+                $query .= " AND user_id = " . intval($scraperUserId);
+            }
+            
             $stmt = $conn->prepare($query);
             $stmt->bind_param("s", $newUrl);
             if ($stmt->execute()) {
@@ -106,12 +138,17 @@ $totalQuery = "SELECT COUNT(*) as total FROM properties";
 $result = $conn->query($totalQuery);
 $total = $result->fetch_assoc()['total'];
 
+// Count script images (only from scraper user, not user-uploaded)
 $scriptImagesQuery = "SELECT COUNT(*) as count FROM properties 
-                      WHERE image_url LIKE '%placeholder%' 
+                      WHERE (image_url LIKE '%placeholder%' 
                          OR image_url LIKE '%via.placeholder%'
                          OR image_url LIKE '%unsplash%'
                          OR image_url = ''
-                         OR image_url IS NULL";
+                         OR image_url IS NULL)
+                      AND (image_url NOT LIKE 'uploads/%' OR image_url IS NULL OR image_url = '')";
+if ($scraperUserId !== null) {
+    $scriptImagesQuery .= " AND user_id = " . intval($scraperUserId);
+}
 $result = $conn->query($scriptImagesQuery);
 $scriptImageCount = $result->fetch_assoc()['count'];
 
@@ -292,8 +329,9 @@ if ($result && $result->num_rows > 0) {
                 <div>
                     <p class="font-semibold text-blue-800">Important Notes:</p>
                     <ul class="text-blue-700 text-sm mt-2 space-y-1 list-disc list-inside">
-                        <li>Only script-added images (placeholder, Unsplash URLs) will be updated</li>
+                        <li>Only script-added images from scraper user (User ID: <?php echo $scraperUserId ?? 'N/A'; ?>) will be updated</li>
                         <li>User-uploaded images in the <code class="bg-blue-100 px-1 rounded">uploads/</code> folder will be preserved</li>
+                        <li>All user-uploaded images from other users are protected and will NOT be changed</li>
                         <li>All changes are permanent - make sure to backup if needed</li>
                     </ul>
                 </div>

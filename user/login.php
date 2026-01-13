@@ -47,6 +47,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Login</title>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .error {
@@ -67,8 +68,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     </style>
 </head>
-<body class="bg-white font-sans min-h-screen flex items-center justify-center">
-<div class="form-container bg-white p-8 rounded-2xl shadow-lg max-w-lg w-full mx-4 border border-gray-200">
+<body class="bg-gradient-to-br from-blue-50 via-white to-purple-50 font-sans min-h-screen flex items-center justify-center py-8">
+<div class="form-container bg-white p-8 rounded-2xl shadow-xl max-w-lg w-full mx-4 border border-gray-100 relative">
+    <a href="../index.php" class="group inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-purple-50 hover:from-blue-100 hover:to-purple-100 text-gray-700 hover:text-primary rounded-full transition-all duration-300 mb-6 border border-blue-100 hover:border-primary/30 hover:shadow-md" style="text-decoration:none;">
+        <div class="w-8 h-8 rounded-full bg-white group-hover:bg-primary/10 flex items-center justify-center transition-all duration-300 group-hover:scale-110">
+            <i class="ri-arrow-left-line text-lg group-hover:text-primary"></i>
+        </div>
+        <span class="font-medium">Back to Home</span>
+    </a>
     <h2 class="text-3xl text-center mb-6 font-bold" style="font-family:'Pacifico',cursive;color:#4A90E2;">Login to Your Account</h2>
     <?php echo $message; ?>
     <form method="POST" class="space-y-4">

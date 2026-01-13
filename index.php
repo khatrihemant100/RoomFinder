@@ -641,12 +641,86 @@
                     <a href="user/login.php" class="hidden md:block px-4 py-2 text-primary border border-primary rounded-button hover:bg-primary hover:text-white transition-colors whitespace-nowrap" data-i18n="sign_in">Sign In</a>
                     <a href="user/createaccount.php" class="px-4 py-2 bg-primary text-white rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap" data-i18n="sign_up">Sign Up</a>
                 <?php endif; ?>
-                <button class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700">
+                <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden w-10 h-10 flex items-center justify-center text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
                     <i class="ri-menu-line text-xl"></i>
                 </button>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:hidden" onclick="toggleMobileMenu()"></div>
+    
+    <!-- Mobile Menu Sidebar -->
+    <div id="mobile-menu" class="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 md:hidden">
+        <div class="p-4 border-b border-gray-200 flex items-center justify-between">
+            <h2 class="text-xl font-['Pacifico'] text-primary">RoomFinder</h2>
+            <button onclick="toggleMobileMenu()" class="w-10 h-10 flex items-center justify-center text-gray-700 hover:bg-gray-100 rounded-lg">
+                <i class="ri-close-line text-xl"></i>
+            </button>
+        </div>
+        <nav class="p-4 space-y-2">
+            <a href="index.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-home-line"></i>
+                <span data-i18n="home">Home</span>
+            </a>
+            <a href="find-rooms.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-search-line"></i>
+                <span data-i18n="find_rooms">Find Rooms</span>
+            </a>
+            <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
+            <a href="list-property.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-add-circle-line"></i>
+                <span data-i18n="list_property">List Property</span>
+            </a>
+            <?php endif; ?>
+            <a href="about.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-information-line"></i>
+                <span data-i18n="about_us">About Us</span>
+            </a>
+            <a href="contact.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-customer-service-line"></i>
+                <span data-i18n="contact">Contact</span>
+            </a>
+            <?php if(isset($_SESSION["user_id"])): ?>
+            <a href="messages.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors relative" onclick="toggleMobileMenu()">
+                <i class="ri-message-3-line"></i>
+                <span>Messages</span>
+                <?php
+                if (isset($_SESSION["user_id"])) {
+                    require_once 'db.php';
+                    $unreadStmt = $conn->prepare("SELECT COUNT(*) FROM messages WHERE receiver_id = ? AND is_read = 0");
+                    $unreadStmt->bind_param("i", $_SESSION["user_id"]);
+                    $unreadStmt->execute();
+                    $unreadStmt->bind_result($unread_count);
+                    $unreadStmt->fetch();
+                    $unreadStmt->close();
+                    if ($unread_count > 0) {
+                        echo '<span class="ml-auto bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">' . $unread_count . '</span>';
+                    }
+                }
+                ?>
+            </a>
+            <a href="user/profile.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-user-line"></i>
+                <span>Profile</span>
+            </a>
+            <a href="user/logout.php" class="flex items-center space-x-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-logout-box-r-line"></i>
+                <span>Logout</span>
+            </a>
+            <?php else: ?>
+            <a href="user/login.php" class="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-primary rounded-lg transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-login-box-line"></i>
+                <span data-i18n="sign_in">Sign In</span>
+            </a>
+            <a href="user/createaccount.php" class="flex items-center space-x-3 px-4 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors" onclick="toggleMobileMenu()">
+                <i class="ri-user-add-line"></i>
+                <span data-i18n="sign_up">Sign Up</span>
+            </a>
+            <?php endif; ?>
+        </nav>
+    </div>
 
     <!-- नेपाली नोट: मुख्य हिरो सेसन (मुख्य शीर्षक र खोजी) -->
     <section class="hero-section w-full py-16 md:py-24 relative overflow-hidden">
@@ -1305,6 +1379,33 @@
             const button = event.target.closest('[onclick="toggleUserDropdown()"]');
             if (dropdown && !dropdown.contains(event.target) && !button) {
                 dropdown.classList.add('hidden');
+            }
+        });
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            const isHidden = menu.classList.contains('-translate-x-full');
+            
+            if (isHidden) {
+                menu.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; // Prevent body scroll
+            } else {
+                menu.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                document.body.style.overflow = ''; // Restore body scroll
+            }
+        }
+
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const menu = document.getElementById('mobile-menu');
+                if (!menu.classList.contains('-translate-x-full')) {
+                    toggleMobileMenu();
+                }
             }
         });
     </script>

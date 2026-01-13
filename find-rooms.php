@@ -59,6 +59,11 @@ body { background: #fff !important; font-family: 'Inter', sans-serif; color: #33
 .rf-header .nav { display:flex; gap:28px; }
 .rf-header .nav a { color:#333; font-weight:500; text-decoration:none; transition:color 0.2s; }
 .rf-header .nav a:hover { color:#4A90E2; }
+@media (max-width: 768px) {
+  .rf-header .nav { display:none; }
+  .rf-header .mobile-menu-btn { display:flex !important; }
+}
+.rf-header .mobile-menu-btn { display:none; align-items:center; justify-content:center; width:40px; height:40px; background:transparent; border:none; cursor:pointer; color:#333; font-size:24px; }
 .rf-header .user-area { display:flex; align-items:center; gap:12px; }
 .rf-header .user-area span { color:#4A90E2; font-weight:600; background:#eaf4fb; padding:6px 16px; border-radius:8px; }
 .rf-header .user-area a { background:#FF6B6B; color:#fff; padding:8px 18px; border-radius:8px; font-weight:500; text-decoration:none; transition:background 0.2s; }
@@ -553,6 +558,9 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
 <header class="rf-header">
 <div class="container">
   <a href="index.php" class="logo">RoomFinder</a>
+            <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="mobile-menu-btn">
+                <i class="ri-menu-line"></i>
+            </button>
             <nav class="nav">
                 <a href="index.php">Home</a>
                 <a href="find-rooms.php">Find Rooms</a>
@@ -620,6 +628,66 @@ main { background:#fff; border-radius:12px; padding:30px; box-shadow:0 10px 30px
   </div>
 </div>
 </header>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobile-menu-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;" onclick="toggleMobileMenu()"></div>
+
+<!-- Mobile Menu Sidebar -->
+<div id="mobile-menu" style="position:fixed;top:0;left:0;height:100%;width:256px;background:white;box-shadow:2px 0 10px rgba(0,0,0,0.1);z-index:50;transform:translateX(-100%);transition:transform 0.3s;">
+  <div style="padding:16px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
+    <h2 style="font-family:'Pacifico',cursive;font-size:20px;color:#4A90E2;margin:0;">RoomFinder</h2>
+    <button onclick="toggleMobileMenu()" style="width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:transparent;border:none;cursor:pointer;color:#374151;font-size:24px;" onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+  <nav style="padding:16px;display:flex;flex-direction:column;gap:8px;">
+    <a href="index.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-home-line"></i>
+      <span>Home</span>
+    </a>
+    <a href="find-rooms.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-search-line"></i>
+      <span>Find Rooms</span>
+    </a>
+    <?php if(isset($_SESSION["role"]) && $_SESSION["role"] === 'owner'): ?>
+    <a href="list-property.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-add-circle-line"></i>
+      <span>List Property</span>
+    </a>
+    <?php endif; ?>
+    <a href="about.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-information-line"></i>
+      <span>About Us</span>
+    </a>
+    <a href="contact.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-customer-service-line"></i>
+      <span>Contact</span>
+    </a>
+    <?php if(isset($_SESSION["user_id"])): ?>
+    <a href="messages.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;position:relative;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-message-3-line"></i>
+      <span>Messages</span>
+    </a>
+    <a href="user/profile.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-user-line"></i>
+      <span>Profile</span>
+    </a>
+    <a href="user/logout.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#ef4444;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'" onclick="toggleMobileMenu()">
+      <i class="ri-logout-box-r-line"></i>
+      <span>Logout</span>
+    </a>
+    <?php else: ?>
+    <a href="user/login.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;color:#374151;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#eff6ff';this.style.color='#4A90E2'" onmouseout="this.style.background='transparent';this.style.color='#374151'" onclick="toggleMobileMenu()">
+      <i class="ri-login-box-line"></i>
+      <span>Sign In</span>
+    </a>
+    <a href="user/createaccount.php" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:#4A90E2;color:white;text-decoration:none;border-radius:8px;" onmouseover="this.style.background='#357ABD'" onmouseout="this.style.background='#4A90E2'" onclick="toggleMobileMenu()">
+      <i class="ri-user-add-line"></i>
+      <span>Sign Up</span>
+    </a>
+    <?php endif; ?>
+  </nav>
+</div>
 
 <div class="container">
 <main>
@@ -1278,6 +1346,35 @@ document.addEventListener('click', function(event) {
   const button = event.target.closest('[onclick="toggleUserDropdown()"]');
   if (dropdown && !dropdown.contains(event.target) && !button) {
     dropdown.style.display = 'none';
+  }
+});
+
+// Toggle mobile menu
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const overlay = document.getElementById('mobile-menu-overlay');
+  if (!menu) return;
+  
+  const isHidden = menu.style.transform === 'translateX(-100%)' || menu.style.transform === '';
+  
+  if (isHidden) {
+    menu.style.transform = 'translateX(0)';
+    overlay.style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  } else {
+    menu.style.transform = 'translateX(-100%)';
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+  }
+}
+
+// Close mobile menu on escape key
+document.addEventListener('keydown', function(event) {
+  if (event.key === 'Escape') {
+    const menu = document.getElementById('mobile-menu');
+    if (menu && menu.style.transform === 'translateX(0)') {
+      toggleMobileMenu();
+    }
   }
 });
 </script>
